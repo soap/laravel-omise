@@ -19,8 +19,6 @@ You can install the package via composer:
 composer require soap/laravel-omise
 ```
 
-You can publish and run the migrations with:
-
 You can publish the config file with:
 
 ```bash
