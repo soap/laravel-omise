@@ -1,6 +1,6 @@
 {
     "name": "soap/laravel-omise",
-    "description": "This is my package laravel-omise",
+    "description": "Make Omise payment gateway integration easier with Laravel",
     "keywords": [
         "Prasit Gebsaap",
         "laravel",
