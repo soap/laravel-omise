@@ -23,10 +23,10 @@
     },
     "require-dev": {
         "laravel/pint": "^1.14",
-        "nunomaduro/collision": "^8.1.1",
+        "nunomaduro/collision": "^8.1.1||^7.10.0",
         "larastan/larastan": "^2.9",
         "orchestra/testbench": "^9.0.0||^8.22.0",
-        "pestphp/pest": "^3.0",
+        "pestphp/pest": "^3.0||2.0",
         "pestphp/pest-plugin-arch": "^3.0",
         "pestphp/pest-plugin-laravel": "^3.0",
         "phpstan/extension-installer": "^1.3",
@@ -36,8 +36,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Soap\\LaravelOmise\\": "src/",
-            "Soap\\LaravelOmise\\Database\\Factories\\": "database/factories/"
+            "Soap\\LaravelOmise\\": "src/"        
         }
     },
     "autoload-dev": {
