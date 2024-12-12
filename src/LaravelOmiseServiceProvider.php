@@ -4,8 +4,6 @@ namespace Soap\LaravelOmise;
 
 use Soap\LaravelOmise\Commands\OmiseAccountCommand;
 use Soap\LaravelOmise\Commands\OmiseVerifyCommand;
-use Soap\LaravelOmise\Omise;
-use Soap\LaravelOmise\OmiseConfig;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
