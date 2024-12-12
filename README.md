@@ -5,15 +5,11 @@
 [![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/soap/laravel-omise/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/soap/laravel-omise/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/soap/laravel-omise.svg?style=flat-square)](https://packagist.org/packages/soap/laravel-omise)
 
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
+This package provide Laravel developers to use Omise API class in Laravel way.
 
 ## Support us
 
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/laravel-omise.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/laravel-omise)
 
-We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
-
-We highly appreciate you sending us a postcard from your hometown, mentioning which of our package(s) you are using. You'll find our address on [our contact page](https://spatie.be/about-us). We publish all received postcards on [our virtual postcard wall](https://spatie.be/open-source/postcards).
 
 ## Installation
 
@@ -25,35 +21,35 @@ composer require soap/laravel-omise
 
 You can publish and run the migrations with:
 
-```bash
-php artisan vendor:publish --tag="laravel-omise-migrations"
-php artisan migrate
-```
-
 You can publish the config file with:
 
 ```bash
-php artisan vendor:publish --tag="laravel-omise-config"
+php artisan vendor:publish --tag="omise-config"
 ```
 
 This is the contents of the published config file:
 
 ```php
 return [
+    'url' => 'https://api.omise.co',
+
+    'live_public_key' => env('OMISE_LIVE_PUBLIC_KEY', 'pkey_test_xxx'),
+    'live_secret_key' => env('OMISE_LIVE_SECRET_KEY', 'skey_test_xxx'),
+
+    'test_public_key' => env('OMISE_TEST_PUBLIC_KEY', ''),
+    'test_secret_key' => env('OMISE_TEST_SECRET_KEY', ''),
+
+    'api_version' => env('OMISE_API_VERSION', '2019-05-29'),
+
+    'sanbox_status' => env('OMISE_SANDBOX_STATUS', true),
 ];
 ```
 
-Optionally, you can publish the views using
-
-```bash
-php artisan vendor:publish --tag="laravel-omise-views"
-```
 
 ## Usage
 
 ```php
-$laravelOmise = new Soap\LaravelOmise();
-echo $laravelOmise->echoPhrase('Hello, Soap!');
+
 ```
 
 ## Testing
