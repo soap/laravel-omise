@@ -2,6 +2,7 @@
 
 namespace Soap\LaravelOmise;
 
+use Soap\LaravelOmise\Commands\OmiseAccountCommand;
 use Soap\LaravelOmise\Commands\OmiseVerifyCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -18,7 +19,10 @@ class LaravelOmiseServiceProvider extends PackageServiceProvider
         $package
             ->name('laravel-omise')
             ->hasConfigFile()
-            ->hasCommand(OmiseVerifyCommand::class);
+            ->hasCommands([
+                OmiseVerifyCommand::class,
+                OmiseAccountCommand::class,
+            ]);
     }
 
     public function packageRegistered()
