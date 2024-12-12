@@ -2,7 +2,7 @@
 
 namespace Soap\LaravelOmise;
 
-class LaravelOmise
+class OmiseConfig
 {
     protected static $url;
 

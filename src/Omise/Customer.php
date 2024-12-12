@@ -4,18 +4,18 @@ namespace Soap\LaravelOmise\Omise;
 
 use Exception;
 use OmiseCustomer;
-use Soap\LaravelOmise\LaravelOmise;
+use Soap\LaravelOmise\OmiseConfig;
 
 class Customer extends BaseObject
 {
-    private $laravelOmise;
+    private $omiseConfig;
 
     /**
      * Injecting dependencies
      */
-    public function __construct(LaravelOmise $laravelOmise)
+    public function __construct(OmiseConfig $omiseConfig)
     {
-        $this->laravelOmise = $laravelOmise;
+        $this->omiseConfig = $omiseConfig;
     }
 
     /**
@@ -25,7 +25,7 @@ class Customer extends BaseObject
     public function find($id)
     {
         try {
-            $this->refresh(OmiseCustomer::retrieve($id, $this->laravelOmise->getPublicKey(), $this->laravelOmise->getSecretKey()));
+            $this->refresh(OmiseCustomer::retrieve($id, $this->omiseConfig->getPublicKey(), $this->omiseConfig->getSecretKey()));
         } catch (Exception $e) {
             return new Error([
                 'code' => 'not_found',
@@ -43,7 +43,7 @@ class Customer extends BaseObject
     public function create($params)
     {
         try {
-            $this->refresh(OmiseCustomer::create($params, $this->laravelOmise->getPublicKey(), $this->laravelOmise->getSecretKey()));
+            $this->refresh(OmiseCustomer::create($params, $this->omiseConfig->getPublicKey(), $this->omiseConfig->getSecretKey()));
         } catch (Exception $e) {
             return new Error([
                 'code' => 'bad_request',

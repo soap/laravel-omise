@@ -5,8 +5,8 @@ namespace Soap\LaravelOmise\Omise;
 use Exception;
 use OmiseCharge;
 use OmiseRefund;
-use Soap\LaravelOmise\LaravelOmise;
 use Soap\LaravelOmise\Omise\Helpers\OmiseMoney;
+use Soap\LaravelOmise\OmiseConfig;
 
 /**
  * @property object $object
@@ -40,23 +40,21 @@ use Soap\LaravelOmise\Omise\Helpers\OmiseMoney;
  */
 class Charge extends BaseObject
 {
-    private $laravelOmise;
+    private $omiseConfig;
 
-    public function __construct(LaravelOmise $laravelOmise)
+    public function __construct(OmiseConfig $omiseConfig)
     {
-        $this->laravelOmise = $laravelOmise;
+        $this->omiseConfig = $omiseConfig;
     }
 
     /**
      * @param  string  $id
-     * @param  int|null  $storeId
      * @return \Soap\LaravelOmise\Omise\Error|self
      */
-    public function find($id, $storeId = null)
+    public function find($id)
     {
         try {
-            // $this->config->setStoreId($storeId);
-            $this->refresh(OmiseCharge::retrieve($id, $this->laravelOmise->getPublicKey(), $this->laravelOmise->getSecretKey()));
+            $this->refresh(OmiseCharge::retrieve($id, $this->omiseConfig->getPublicKey(), $this->omiseConfig->getSecretKey()));
         } catch (Exception $e) {
             return new Error([
                 'code' => 'not_found',
@@ -76,7 +74,7 @@ class Charge extends BaseObject
     public function create($params)
     {
         try {
-            $this->refresh(OmiseCharge::create($params, $this->laravelOmise->getPublicKey(), $this->laravelOmise->getSecretKey()));
+            $this->refresh(OmiseCharge::create($params, $this->omiseConfig->getPublicKey(), $this->omiseConfig->getSecretKey()));
         } catch (Exception $e) {
             return new Error([
                 'code' => 'bad_request',

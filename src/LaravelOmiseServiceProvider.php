@@ -20,4 +20,11 @@ class LaravelOmiseServiceProvider extends PackageServiceProvider
             ->hasConfigFile()
             ->hasCommand(OmiseVerifyCommand::class);
     }
+
+    public function packageRegistered()
+    {
+        $this->app->singleton('omise', function ($app) {
+            return new Omise($app->make(OmiseConfig::class));
+        });
+    }
 }
