@@ -23,15 +23,12 @@ class OmiseAccountCommand extends Command
         $this->table(['Key', 'Value'], [
             ['ID', $response->id],
             ['Email', $response->email],
-            ['Type', $response->type],
-            ['Name', $response->name],
-            ['Bank', $response->bank],
-            ['Description', $response->description],
-            ['Public Key', $response->public_key],
-            ['Secret Key', $response->secret_key],
+            ['Live Mode', $response->livemode],
+            ['Webhook Uri', $response->webhook_uri],
+            ['Country', $response->country],
+            ['Api Version', $response->api_version],
             ['Currency', $response->currency],
-            ['Location', $response->location],
-            ['Created', $response->created],
+            ['Created At', $response->created_at],
         ]);
 
         return self::SUCCESS;
