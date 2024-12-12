@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Facade;
 /**
  * @see \Soap\LaravelOmise\LaravelOmise
  */
-class Treasurer extends Facade
+class Omise extends Facade
 {
     protected static function getFacadeAccessor()
     {
