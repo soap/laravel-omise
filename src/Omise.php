@@ -15,6 +15,26 @@ class Omise
         $this->config = $omiseConfig;
     }
 
+    public function validConfig()
+    {
+        return $this->config->canInitialize();
+    }
+
+    public function liveMode()
+    {
+        return ! $this->config->isSandboxEnabled();
+    }
+
+    public function getPublicKey()
+    {
+        return $this->config->getPublicKey();
+    }
+
+    public function getSecretKey()
+    {
+        return $this->config->getSecretKey();
+    }
+
     public function account()
     {
         return new Account($this->config);

@@ -3,6 +3,8 @@
 namespace Soap\LaravelOmise;
 
 use Soap\LaravelOmise\Commands\OmiseAccountCommand;
+use Soap\LaravelOmise\Commands\OmiseCapabilitiesCommand;
+use Soap\LaravelOmise\Commands\OmiseRefundCommand;
 use Soap\LaravelOmise\Commands\OmiseVerifyCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -22,6 +24,8 @@ class LaravelOmiseServiceProvider extends PackageServiceProvider
             ->hasCommands([
                 OmiseVerifyCommand::class,
                 OmiseAccountCommand::class,
+                OmiseCapabilitiesCommand::class,
+                OmiseRefundCommand::class,
             ]);
     }
 

@@ -12,7 +12,22 @@ class OmiseVerifyCommand extends Command
 
     public function handle(): int
     {
-        $this->comment('All done');
+        if (! app('omise')->validConfig()) {
+            $this->error('Omise keys configuration is invalid');
+
+            return self::FAILURE;
+        }
+        $this->line('Omise keys configuration is valid!');
+        $this->line('Verifying connection to Omise API...');
+        $response = app('omise')->account()->retrieve();
+        if ($response instanceof \Soap\LaravelOmise\Omise\Error) {
+            $this->error('Omise api call failed');
+            $this->error($response->getMessage());
+
+            return self::FAILURE;
+        }
+
+        $this->line('Connection to Omise API verified successfully!');
 
         return self::SUCCESS;
     }

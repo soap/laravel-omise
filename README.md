@@ -46,14 +46,23 @@ return [
 
 ## Usage
 
+You have to register with Omise, then fill in the keys as in the configuration file.
+Note: you just add your keys in the .env file, and then test if it is valid using artisan command.
 ```php
+php artisan omise:verify
 
 ```
+## Artisan Commands
+# Verification
+# Account
+# Customer
+# Charge
+# Refund
 
 ## Testing
 
 ```bash
-composer test
+vendor\bin\pest
 ```
 
 ## Changelog

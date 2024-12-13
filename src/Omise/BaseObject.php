@@ -21,8 +21,8 @@ class BaseObject
 
         if ($object != null) {
             $this->object = $object;
-        } elseif (method_exists($this->object, 'reload')) {
-            $this->object->reload();
+        } elseif (method_exists($this->object, 'refresh')) {
+            $this->object->refresh();
         }
 
         return $this;
