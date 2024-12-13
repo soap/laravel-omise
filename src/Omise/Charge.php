@@ -88,10 +88,10 @@ class Charge extends BaseObject
     /**
      * @return \Soap\LaravelOmise\Omise\Error|self
      */
-    public function capture()
+    public function capture(array $params)
     {
         try {
-            $this->refresh($this->object->capture());
+            $this->refresh($this->object->capture($params));
         } catch (Exception $e) {
             return new Error([
                 'code' => 'failed_capture',
@@ -107,12 +107,15 @@ class Charge extends BaseObject
      *
      * @throws Exception
      */
-    public function refund($refundData)
+    public function refund(array $refundData)
     {
         try {
             $refund = $this->object->refund($refundData);
         } catch (Exception $e) {
-            throw new Exception(__('Failed to refund : '.$e->getMessage()));
+            return new Error([
+                'code' => 'failed_refund',
+                'message' => $e->getMessage(),
+            ]);
         }
 
         return $refund;
