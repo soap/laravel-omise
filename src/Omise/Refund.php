@@ -1,6 +1,6 @@
 <?php
 
-namespace Soap\LaravelOmise;
+namespace Soap\LaravelOmise\Omise;
 
 use Exception;
 use OmiseRefund;

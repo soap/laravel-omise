@@ -6,7 +6,7 @@ use Exception;
 use OmiseCapabilities;
 use Soap\LaravelOmise\OmiseConfig;
 
-class Customer extends BaseObject
+class Capabilities extends BaseObject
 {
     private $omiseConfig;
 
