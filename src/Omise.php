@@ -5,6 +5,7 @@ namespace Soap\LaravelOmise;
 use Soap\LaravelOmise\Omise\Account;
 use Soap\LaravelOmise\Omise\Charge;
 use Soap\LaravelOmise\Omise\Customer;
+use Soap\LaravelOmise\Omise\Source;
 
 class Omise
 {
@@ -48,5 +49,10 @@ class Omise
     public function customer()
     {
         return new Customer($this->config);
+    }
+
+    public function source()
+    {
+        return new Source($this->config);
     }
 }
