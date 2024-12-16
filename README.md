@@ -52,6 +52,42 @@ Note: you just add your keys in the .env file, and then test if it is valid usin
 php artisan omise:verify
 
 ```
+## Create Omise API Objects
+To create Omise API objects like Charge, Source, Customer you can use Laravel independency injection (Soap\LaravelOmise\Omise) or use app('omise') and the access them like this:
+```
+$account = app('omise')->account()->retrieve(); // method herer
+$account->livemode; // access property access
+$account->livemode(); // using method access
+
+$account->api_version; // snake case as return from omise
+$account->apiVersion(); // camelCase if use method to access
+
+// get public key or secret key
+
+$omise->getPublicKey(); // to get live public key or test one depends on 'sandbox_status'
+$omise->getPrivateKey();
+```
+Here is the example usage from Controller:
+```php
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Soap\LaravelOmise\Omise;
+use Soap\LaravelOmise\Omise\Charge;
+use Soap\LaravelOmise\Omise\Error;
+
+class PaymentController extends Controller
+{
+    public function __construct(protected Omise $omise) {}
+
+    public function create()
+    {
+        $publicKey = $this->omise->getPublicKey();
+
+        return view('payments.form', compact('publicKey'));
+    }
+}
+```
 ## Artisan Commands
 # Verification
 # Account
