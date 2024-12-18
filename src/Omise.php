@@ -46,7 +46,7 @@ class Omise
     {
         return new Capabilities($this->config);
     }
-    
+
     public function charge()
     {
         return new Charge($this->config);
