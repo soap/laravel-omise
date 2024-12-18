@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-omise` will be documented in this file.
 
+## v1.1.17 - 2024-12-18
+
+Add capabilities method to Omise class
+
+**Full Changelog**: https://github.com/soap/laravel-omise/compare/v1.1.16...v1.1.17
+
 ## v1.1.16 - 2024-12-16
 
 Add Source API to 'omise' class.
