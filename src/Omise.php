@@ -3,6 +3,7 @@
 namespace Soap\LaravelOmise;
 
 use Soap\LaravelOmise\Omise\Account;
+use Soap\LaravelOmise\Omise\Capabilities;
 use Soap\LaravelOmise\Omise\Charge;
 use Soap\LaravelOmise\Omise\Customer;
 use Soap\LaravelOmise\Omise\Source;
@@ -41,6 +42,11 @@ class Omise
         return new Account($this->config);
     }
 
+    public function capabilities()
+    {
+        return new Capabilities($this->config);
+    }
+    
     public function charge()
     {
         return new Charge($this->config);

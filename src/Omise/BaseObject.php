@@ -49,7 +49,6 @@ class BaseObject
     public function __call($method, $args)
     {
         $key = Str::snake($method);
-
         return $this->$key;
     }
 }
