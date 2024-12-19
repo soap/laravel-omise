@@ -6,6 +6,18 @@ use Exception;
 use OmiseSource;
 use Soap\LaravelOmise\OmiseConfig;
 
+/**
+ * @property object $object
+ * @property string $id
+ * @property bool $zero_interest_installments
+ * @property array $installment_terms
+ * @property array $payment_methods
+ * @property array $references
+ * @property array $flow
+ * @property array $amount
+ * @property array $currency
+ * @property array $barcode
+ */
 class Source extends BaseObject
 {
     private $omiseConfig;
@@ -44,19 +56,5 @@ class Source extends BaseObject
         }
 
         return $this;
-    }
-
-    public function url($id)
-    {
-        try {
-            $url = OmiseSource::getUrl($id, $this->omiseConfig->getPublicKey(), $this->omiseConfig->getSecretKey());
-        } catch (Exception $e) {
-            return new Error([
-                'code' => 'not_found',
-                'message' => $e->getMessage(),
-            ]);
-        }
-
-        return $url;
     }
 }

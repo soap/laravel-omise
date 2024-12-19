@@ -4,6 +4,7 @@ namespace Soap\LaravelOmise\Omise;
 
 use Exception;
 use OmiseRefund;
+use Soap\LaravelOmise\OmiseConfig;
 
 class Refund extends BaseObject
 {
