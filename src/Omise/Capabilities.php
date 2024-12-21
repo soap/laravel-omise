@@ -40,7 +40,7 @@ class Capabilities extends BaseObject
 
     private function shouldCallApi()
     {
-        return $this->object === null;
+        return $this->object == null;
     }
 
     private function ensureDataExists()
@@ -143,5 +143,15 @@ class Capabilities extends BaseObject
     public function getInstallmentMinLimit()
     {
         return $this->limits['installment_amount']['min'];
+    }
+
+    public function getChargeAmountMinLimit()
+    {
+        return $this->limits['charge_amount']['min'];
+    }
+
+    public function getChargeAmountMaxLimit()
+    {
+        return $this->limits['charge_amount']['max'];
     }
 }
