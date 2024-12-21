@@ -17,7 +17,7 @@ class OmiseVerifyCommand extends Command
 
             return self::FAILURE;
         }
-        $this->line('Omise keys configuration is valid!');
+        $this->line('Omise keys configuration is valid!', 'info');
         $this->line('Verifying connection to Omise API...');
         $response = app('omise')->account()->retrieve();
         if ($response instanceof \Soap\LaravelOmise\Omise\Error) {
@@ -27,7 +27,7 @@ class OmiseVerifyCommand extends Command
             return self::FAILURE;
         }
 
-        $this->line('Connection to Omise API verified successfully!');
+        $this->line('Connection to Omise API verified successfully!', 'info');
 
         return self::SUCCESS;
     }
