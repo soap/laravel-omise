@@ -1,25 +1,22 @@
 <?php
 
-use Soap\LaravelOmise\OmiseConfig;
-
-
-beforeEach(function() {
+beforeEach(function () {
     putenv('OMISE_TEST_PUBLIC_KEY=omise_test_public_key');
     putenv('OMISE_TEST_SECRET_KEY=omise_test_secret_key');
-    
+
     putenv('OMISE_LIVE_PUBLIC_KEY=omise_live_public_key');
     putenv('OMISE_LIVE_SECRET_KEY=omise_live_secret_key');
-    
+
     putenv('OMISE_SANDBOX_STATUS=true');
     putenv('OMISE_URL=https://api.omise.co');
 
     config([
-        'omise.test_public_key'         => getenv('OMISE_TEST_PUBLIC_KEY'),
-        'omise.test_secret_key'         => getenv('OMISE_TEST_SECRET_KEY'),
-        'omise.live_public_key'    => getenv('OMISE_LIVE_PUBLIC_KEY'),
-        'omise.live_secret_key'    => getenv('OMISE_LIVE_SECRET_KEY'),
-        'omise.sandbox_status'     => getenv('OMISE_SANDBOX_STATUS'),
-        'omise.url'                => getenv('OMISE_URL', true),
+        'omise.test_public_key' => getenv('OMISE_TEST_PUBLIC_KEY'),
+        'omise.test_secret_key' => getenv('OMISE_TEST_SECRET_KEY'),
+        'omise.live_public_key' => getenv('OMISE_LIVE_PUBLIC_KEY'),
+        'omise.live_secret_key' => getenv('OMISE_LIVE_SECRET_KEY'),
+        'omise.sandbox_status' => getenv('OMISE_SANDBOX_STATUS'),
+        'omise.url' => getenv('OMISE_URL', true),
     ]);
 });
 
