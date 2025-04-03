@@ -4,12 +4,6 @@ namespace Soap\LaravelOmise;
 
 class OmiseConfig
 {
-    protected static $url;
-
-    protected static $public_key;
-
-    protected static $secret_key;
-
     private $canInitialize = false;
 
     public function __construct()
@@ -17,7 +11,7 @@ class OmiseConfig
         $this->init();
     }
 
-    private function init()
+    private function init(): void
     {
         // Initialize only if both keys are present
         if ($this->getPublicKey() && $this->getSecretKey()) {
@@ -30,7 +24,7 @@ class OmiseConfig
         return $this->canInitialize;
     }
 
-    public function getUrl()
+    public function getUrl(): string
     {
         return config('omise.url');
     }
@@ -40,7 +34,7 @@ class OmiseConfig
         return config('omise.sandbox_status');
     }
 
-    public function getPublicKey()
+    public function getPublicKey(): string
     {
         if ($this->isSandboxEnabled()) {
             return config('omise.test_public_key');
@@ -49,7 +43,7 @@ class OmiseConfig
         return config('omise.live_public_key');
     }
 
-    public function getSecretKey()
+    public function getSecretKey(): string
     {
         if ($this->isSandboxEnabled()) {
             return config('omise.test_secret_key');
