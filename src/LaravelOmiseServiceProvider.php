@@ -6,6 +6,8 @@ use Soap\LaravelOmise\Commands\OmiseAccountCommand;
 use Soap\LaravelOmise\Commands\OmiseCapabilitiesCommand;
 use Soap\LaravelOmise\Commands\OmiseRefundCommand;
 use Soap\LaravelOmise\Commands\OmiseVerifyCommand;
+use Soap\LaravelOmise\Omise;
+use Soap\LaravelOmise\OmiseConfig;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -34,5 +36,6 @@ class LaravelOmiseServiceProvider extends PackageServiceProvider
         $this->app->singleton('omise', function ($app) {
             return new Omise($app->make(OmiseConfig::class));
         });
+
     }
 }

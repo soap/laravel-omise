@@ -12,5 +12,5 @@ return [
 
     'api_version' => env('OMISE_API_VERSION', '2019-05-29'),
 
-    'sanbox_status' => env('OMISE_SANDBOX_STATUS', true),
+    'sandbox_status' => env('OMISE_SANDBOX_STATUS', true),
 ];
