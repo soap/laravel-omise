@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-omise` will be documented in this file.
 
+## Fix typo in configuration file - 2025-04-03
+
+- Fix typo in configuration (live mode detection is incorrect)
+
 ## v1.1.19 - 2024-12-21
 
 ### What's Changed
