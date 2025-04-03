@@ -2,6 +2,22 @@
 
 All notable changes to `laravel-omise` will be documented in this file.
 
+## v1.1.19 - 2024-12-21
+
+### What's Changed
+
+* [FIXED] Account command not show live mode status by @soap in https://github.com/soap/laravel-omise/pull/1
+
+### New Contributors
+
+* @soap made their first contribution in https://github.com/soap/laravel-omise/pull/1
+
+**Full Changelog**: https://github.com/soap/laravel-omise/compare/v1.1.18...v1.1.19
+
+## v1.1.18 - 2024-12-19
+
+**Full Changelog**: https://github.com/soap/laravel-omise/compare/v1.1.17...v1.1.18
+
 ## v1.1.17 - 2024-12-18
 
 Add capabilities method to Omise class
