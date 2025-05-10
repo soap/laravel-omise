@@ -34,7 +34,7 @@ class Balance extends BaseObject
 
     public function getTransferableAmount()
     {
-        return OmiseMoney::toCurrencyUnit($this->transferable, $this->currency);    
+        return OmiseMoney::toCurrencyUnit($this->transferable, $this->currency);
     }
 
     public function getReservedAmount()
