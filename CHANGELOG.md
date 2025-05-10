@@ -2,6 +2,16 @@
 
 All notable changes to `laravel-omise` will be documented in this file.
 
+## v1.1.25 - 2025-05-10
+
+**Full Changelog**: https://github.com/soap/laravel-omise/compare/v1.1.24...v1.1.25
+
+### What's Changed
+
+* Fix typo in Omise class by @soap in https://github.com/soap/laravel-omise/pull/8
+
+**Full Changelog**: https://github.com/soap/laravel-omise/compare/v1.1.24...v1.1.25
+
 ## v1.1.24 - 2025-05-10
 
 ### What's Changed
