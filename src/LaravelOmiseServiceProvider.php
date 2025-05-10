@@ -34,5 +34,6 @@ class LaravelOmiseServiceProvider extends PackageServiceProvider
         $this->app->singleton('omise', function ($app) {
             return new Omise($app->make(OmiseConfig::class));
         });
+
     }
 }
