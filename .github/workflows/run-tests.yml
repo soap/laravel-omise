@@ -34,25 +34,4 @@ jobs:
     name: PHP ${{ matrix.php }} / Laravel ${{ matrix.laravel }}
 
     steps:
-      - name: ⬇️ Checkout code
-        uses: actions/checkout@v4
-
-      - name: 🧰 Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php }}
-          coverage: none
-          tools: composer:v2
-
-      - name: ⚙️ Install dependencies
-        run: |
-          composer require "laravel/framework:${{ matrix.laravel }}" \
-                           "orchestra/testbench:${{ matrix.testbench }}" \
-                           "nesbot/carbon:${{ matrix.carbon }}" \
-                           "pestphp/pest-plugin-laravel:${{ matrix.pest_plugin }}" \
-                           --no-interaction --no-update
-
-          composer update --prefer-dist --no-interaction
-
-      - name: ✅ Run tests
-        run: ./vendor/bin/pest
+      - name
