@@ -6,6 +6,17 @@ use OmiseBalance;
 use Soap\LaravelOmise\Omise\Helpers\OmiseMoney;
 use Soap\LaravelOmise\OmiseConfig;
 
+/**
+ * @property int $total
+ * @property int $transferable
+ * @property int $reserved
+ * @property int $on_hold
+ * @property string $currency
+ * @property string $object
+ * @property string $id
+ * @property string $livemode
+ * @property string $location
+ */
 class Balance extends BaseObject
 {
     private $omiseConfig;
