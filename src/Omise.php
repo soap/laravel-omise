@@ -61,4 +61,9 @@ class Omise
     {
         return new Source($this->config);
     }
+
+    public function balance()
+    {
+        return new Balanace($this->config);
+    }
 }
