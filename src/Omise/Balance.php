@@ -2,7 +2,9 @@
 
 namespace Soap\LaravelOmise\Omise;
 
+use OmiseBalance;
 use Soap\LaravelOmise\Omise\Helpers\OmiseMoney;
+use Soap\LaravelOmise\OmiseConfig;
 
 class Balance extends BaseObject
 {
