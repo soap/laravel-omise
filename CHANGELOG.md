@@ -2,6 +2,14 @@
 
 All notable changes to `laravel-omise` will be documented in this file.
 
+## v1.1.24 - 2025-05-10
+
+### What's Changed
+
+* Classes not found by @soap in https://github.com/soap/laravel-omise/pull/7
+
+**Full Changelog**: https://github.com/soap/laravel-omise/compare/v1.1.23...v1.1.24
+
 ## v1.1.23 - 2025-05-10
 
 **Full Changelog**: https://github.com/soap/laravel-omise/compare/v1.1.22...v1.1.23
