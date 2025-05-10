@@ -3,6 +3,7 @@
 namespace Soap\LaravelOmise;
 
 use Soap\LaravelOmise\Omise\Account;
+use Soap\LaravelOmise\Omise\Balance;
 use Soap\LaravelOmise\Omise\Capabilities;
 use Soap\LaravelOmise\Omise\Charge;
 use Soap\LaravelOmise\Omise\Customer;
@@ -64,6 +65,6 @@ class Omise
 
     public function balance()
     {
-        return new Balanace($this->config);
+        return new Balance($this->config);
     }
 }
