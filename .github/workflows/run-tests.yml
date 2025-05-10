@@ -44,7 +44,7 @@ jobs:
           coverage: none
           tools: composer:v2
 
-      - name: ⚙️ Install dependencies (with Laravel compatibility)
+      - name: ⚙️ Install dependencies
         run: |
           if [[ "${{ matrix.laravel }}" == "12.*" ]]; then
             composer require \
@@ -59,10 +59,13 @@ jobs:
               "orchestra/testbench:${{ matrix.testbench }}" \
               "nesbot/carbon:${{ matrix.carbon }}" \
               "pestphp/pest-plugin-laravel:${{ matrix.pest_plugin }}" \
+              larastan/larastan \
+              phpstan/phpstan-phpunit \
               --no-interaction --no-update
           fi
 
           composer update --prefer-dist --no-interaction
+
 
       - name: ✅ Run tests
         run: ./vendor/bin/pest
