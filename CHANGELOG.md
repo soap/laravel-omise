@@ -2,6 +2,14 @@
 
 All notable changes to `laravel-omise` will be documented in this file.
 
+## v1.1.21 - 2025-05-10
+
+### What's Changed
+
+* Develop by @soap in https://github.com/soap/laravel-omise/pull/5
+
+**Full Changelog**: https://github.com/soap/laravel-omise/compare/v1.1.20...v1.1.21
+
 ## Fix typo in configuration file - 2025-04-03
 
 - Fix typo in configuration (live mode detection is incorrect)
