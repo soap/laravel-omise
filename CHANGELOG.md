@@ -2,6 +2,14 @@
 
 All notable changes to `laravel-omise` will be documented in this file.
 
+## v1.1.30 - 2025-05-14
+
+### What's Changed
+
+* Fixed: error in parsing datetime from Omise by @soap in https://github.com/soap/laravel-omise/pull/14
+
+**Full Changelog**: https://github.com/soap/laravel-omise/compare/v1.1.29...v1.1.30
+
 ## v1.1.29 - 2025-05-14
 
 ### What's Changed
