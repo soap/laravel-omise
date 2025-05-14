@@ -9,7 +9,7 @@ use Soap\LaravelOmise\OmiseConfig;
 /**
  * @property int $total
  * @property int $transferable
- * @property int $reserved
+ * @property int $reserve
  * @property int $on_hold
  * @property string $currency
  * @property string $object
@@ -52,11 +52,16 @@ class Balance extends BaseObject
 
     public function getReservedAmount()
     {
-        return OmiseMoney::toCurrencyUnit($this->reserved, $this->currency);
+        return OmiseMoney::toCurrencyUnit($this->reserve, $this->currency);
     }
 
     public function getTotalAmount()
     {
         return OmiseMoney::toCurrencyUnit($this->total, $this->currency);
+    }
+
+    public function getOnHoldAmount()
+    {
+        return OmiseMoney::toCurrencyUnit($this->on_hold, $this->currency);
     }
 }
