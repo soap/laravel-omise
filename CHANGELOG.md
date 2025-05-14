@@ -2,6 +2,14 @@
 
 All notable changes to `laravel-omise` will be documented in this file.
 
+## v1.1.28 - 2025-05-14
+
+### What's Changed
+
+* Add created at to balance command by @soap in https://github.com/soap/laravel-omise/pull/12
+
+**Full Changelog**: https://github.com/soap/laravel-omise/compare/v1.1.27...v1.1.28
+
 ## v1.1.27 - 2025-05-14
 
 ### What's Changed
