@@ -2,6 +2,7 @@
 
 namespace Soap\LaravelOmise\Omise;
 
+use Carbon\Carbon;
 use OmiseBalance;
 use Soap\LaravelOmise\Omise\Helpers\OmiseMoney;
 use Soap\LaravelOmise\OmiseConfig;
@@ -67,6 +68,6 @@ class Balance extends BaseObject
 
     public function getCreatedAt()
     {
-        return date('Y-m-d H:i:s', $this->created_at);
+        return Carbon::parse($this->created_at);
     }
 }
