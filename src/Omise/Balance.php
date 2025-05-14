@@ -64,4 +64,9 @@ class Balance extends BaseObject
     {
         return OmiseMoney::toCurrencyUnit($this->on_hold, $this->currency);
     }
+
+    public function getCreatedAt()
+    {
+        return date('Y-m-d H:i:s', $this->created_at);
+    }
 }
