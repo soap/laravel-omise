@@ -27,6 +27,7 @@ class OmiseBalanceCommand extends Command
                 'reserved' => $response->getReservedAmount(),
                 'on_hold' => $response->getOnHoldAmount(),
                 'currency' => $response->currency,
+                'created_at' => $response->getCreatedAt()->format('Y-m-d H:i:s P'),
             ]));
 
             return self::SUCCESS;
@@ -39,6 +40,7 @@ class OmiseBalanceCommand extends Command
             ['Reserved', $response->getReservedAmount()],
             ['On Hold', $response->getOnHoldAmount()],
             ['Currency', $response->currency],
+            ['Created At', $response->getCreatedAt()->format('Y-m-d H:i:s P')],
         ]);
 
         return self::SUCCESS;
