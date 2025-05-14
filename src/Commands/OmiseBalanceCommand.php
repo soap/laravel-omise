@@ -6,7 +6,7 @@ use Illuminate\Console\Command;
 
 class OmiseBalanceCommand extends Command
 {
-    public $signature = 'omise:balance';
+    public $signature = 'omise:balance {--json : Output as JSON}';
 
     public $description = 'Retrieve balance information from Omise API';
 
@@ -19,12 +19,25 @@ class OmiseBalanceCommand extends Command
 
             return self::FAILURE;
         }
+
+        if ($this->option('json')) {
+            $this->line(json_encode([
+                'total' => $response->getTotalAmount(),
+                'transferable' => $response->getTransferableAmount(),
+                'reserved' => $response->getReservedAmount(),
+                'on_hold' => $response->getOnHoldAmount(),
+                'currency' => $response->currency,
+            ]));
+
+            return self::SUCCESS;
+        }
+
         $this->line('Balance information retrieved successfully!', 'info');
         $this->table(['Key', 'Value'], [
             ['Total', $response->getTotalAmount()],
             ['Transferable', $response->getTransferableAmount()],
             ['Reserved', $response->getReservedAmount()],
-            ['On Hold', $response->getOnHoldAmoun()],
+            ['On Hold', $response->getOnHoldAmount()],
             ['Currency', $response->currency],
         ]);
 
