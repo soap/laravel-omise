@@ -12,7 +12,8 @@ class OmiseCapabilitiesCommand extends Command
 
     public function handle(): int
     {
+        $capabilities = app('omise')->capabilities()->retrieve();
 
-        return self::SUCCESS;
+        return Command::SUCCESS;
     }
 }

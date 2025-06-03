@@ -17,6 +17,7 @@ use Soap\LaravelOmise\OmiseConfig;
  * @property string $id
  * @property string $livemode
  * @property string $location
+ * @property string $created_at
  */
 class Balance extends BaseObject
 {
