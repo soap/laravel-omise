@@ -52,7 +52,7 @@ class Account extends BaseObject
     /**
      * Update webhook URI for the account
      *
-     * @param string $uri
+     * @param  string  $uri
      * @return \Soap\LaravelOmise\Omise\Error|self
      */
     public function updateWebhookUri($uri)
@@ -60,19 +60,18 @@ class Account extends BaseObject
         try {
             $omiseAccount = OmiseAccount::retrieve($this->omiseConfig->getPublicKey(), $this->omiseConfig->getSecretKey());
             $omiseAccount->update([
-                'webhook_uri' => $uri
+                'webhook_uri' => $uri,
             ]);
             $this->refresh($omiseAccount);
         } catch (\Exception $e) {
             return new Error([
-                'code' => 'bad_request', 
+                'code' => 'bad_request',
                 'message' => $e->getMessage(),
             ]);
         }
 
         return $this;
     }
-
 
     public function toArray(): array
     {
