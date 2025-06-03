@@ -89,10 +89,37 @@ class PaymentController extends Controller
 }
 ```
 ## Artisan Commands
+
+Display status of account
+
+```php
+php artisan omise:account
+```
+Get account balance
+
+```php
+php artisan omise:balance
+```
+
+
 # Verification
+To valid your configuration provided in .env use the following code. Or you can use artisan command omise:verify.
+
+```php
+app('omise')->validConfig();
+```
 # Account
+You can use account to retrieve account information from Omise, or configure some configuration parameter. For now I just add updateWebhookUri($uri).
+
+```php
+$account = app('omise')->account()->retrieve();
+
+$account->updateWebhookUri('https::mydomain.com/api/omise/webhooks');
+```
 # Customer
+
 # Charge
+
 # Refund
 
 ## Testing
