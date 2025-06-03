@@ -2,6 +2,14 @@
 
 All notable changes to `laravel-omise` will be documented in this file.
 
+## v1.1.31 - 2025-06-03
+
+### What's Changed
+
+* Add updateWebhookUri by @soap in https://github.com/soap/laravel-omise/pull/15
+
+**Full Changelog**: https://github.com/soap/laravel-omise/compare/v1.1.30...v1.1.31
+
 ## v1.1.30 - 2025-05-14
 
 ### What's Changed
