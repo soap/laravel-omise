@@ -35,7 +35,7 @@ jobs:
             carbon: ^3.0
             pest_plugin: ^3.2
             larastan: ^3.0
-            phpstan_phpunit: ^1.3
+            phpstan_phpunit: ^2.0
 
     name: PHP ${{ matrix.php }} / Laravel ${{ matrix.laravel }}
 
