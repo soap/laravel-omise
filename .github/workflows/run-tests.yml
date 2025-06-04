@@ -20,16 +20,22 @@ jobs:
             testbench: ^8.0
             carbon: ^2.63
             pest_plugin: ^2.0
+            larastan: ^2.0
+            phpstan_phpunit: ^1.3
 
           - laravel: 11.*
             testbench: ^9.0
             carbon: ^2.63
             pest_plugin: ^2.4
+            larastan: ^2.0
+            phpstan_phpunit: ^1.3
 
           - laravel: 12.*
             testbench: ^10.0
             carbon: ^3.0
             pest_plugin: ^3.2
+            larastan: ^3.0
+            phpstan_phpunit: ^2.0
 
     name: PHP ${{ matrix.php }} / Laravel ${{ matrix.laravel }}
 
@@ -51,6 +57,8 @@ jobs:
             "orchestra/testbench:${{ matrix.testbench }}" \
             "nesbot/carbon:${{ matrix.carbon }}" \
             "pestphp/pest-plugin-laravel:${{ matrix.pest_plugin }}" \
+            "larastan/larastan:${{ matrix.larastan }}" \
+            "phpstan/phpstan-phpunit:${{ matrix.phpstan_phpunit }}" \
             --no-interaction --no-update
           
           composer update --prefer-dist --no-interaction
