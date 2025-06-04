@@ -44,25 +44,16 @@ jobs:
           coverage: none
           tools: composer:v2
 
-      - name: ⚙️ Install dependencies (with Laravel compatibility)
+      - name: ⚙️ Install dependencies
         run: |
-           if [[ "${{ matrix.laravel }}" == "12.*" ]]; then
-                 composer require \
-                 "laravel/framework:>=12.9.2 <=12.15" \ # Limit Laravel versions to avoid conflicts
-                 "orchestra/testbench:${{ matrix.testbench }}" \
-                 "nesbot/carbon:${{ matrix.carbon }}" \
-                 "pestphp/pest-plugin-laravel:${{ matrix.pest_plugin }}" \
-                 --no-interaction --no-update
-             else
-                 composer require \
-                 "laravel/framework:${{ matrix.laravel }}" \
-                 "orchestra/testbench:${{ matrix.testbench }}" \
-                 "nesbot/carbon:${{ matrix.carbon }}" \
-                 "pestphp/pest-plugin-laravel:${{ matrix.pest_plugin }}" \
-                 --no-interaction --no-update
-             fi
- 
-             composer update --prefer-dist --no-interaction
+          composer require \
+            "laravel/framework:${{ matrix.laravel }}" \
+            "orchestra/testbench:${{ matrix.testbench }}" \
+            "nesbot/carbon:${{ matrix.carbon }}" \
+            "pestphp/pest-plugin-laravel:${{ matrix.pest_plugin }}" \
+            --no-interaction --no-update
+          
+          composer update --prefer-dist --no-interaction
 
       - name: ✅ Run tests
         run: ./vendor/bin/pest
