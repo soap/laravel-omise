@@ -2,6 +2,85 @@
 
 All notable changes to `laravel-omise` will be documented in this file.
 
+## v1.1.31 - 2025-06-03
+
+### What's Changed
+
+* Add updateWebhookUri by @soap in https://github.com/soap/laravel-omise/pull/15
+
+**Full Changelog**: https://github.com/soap/laravel-omise/compare/v1.1.30...v1.1.31
+
+## v1.1.30 - 2025-05-14
+
+### What's Changed
+
+* Fixed: error in parsing datetime from Omise by @soap in https://github.com/soap/laravel-omise/pull/14
+
+**Full Changelog**: https://github.com/soap/laravel-omise/compare/v1.1.29...v1.1.30
+
+## v1.1.29 - 2025-05-14
+
+### What's Changed
+
+* Add created_at to omise balance command by @soap in https://github.com/soap/laravel-omise/pull/13
+
+**Full Changelog**: https://github.com/soap/laravel-omise/compare/v1.1.28...v1.1.29
+
+## v1.1.28 - 2025-05-14
+
+### What's Changed
+
+* Add created at to balance command by @soap in https://github.com/soap/laravel-omise/pull/12
+
+**Full Changelog**: https://github.com/soap/laravel-omise/compare/v1.1.27...v1.1.28
+
+## v1.1.27 - 2025-05-14
+
+### What's Changed
+
+* Add --json to balance command by @soap in https://github.com/soap/laravel-omise/pull/11
+
+**Full Changelog**: https://github.com/soap/laravel-omise/compare/v1.1.26...v1.1.27
+
+## v1.1.26 - 2025-05-14
+
+### What's Changed
+
+* Bump dependabot/fetch-metadata from 2.3.0 to 2.4.0 by @dependabot in https://github.com/soap/laravel-omise/pull/9
+* Develop by @soap in https://github.com/soap/laravel-omise/pull/10
+
+**Full Changelog**: https://github.com/soap/laravel-omise/compare/v1.1.25...v1.1.26
+
+## v1.1.25 - 2025-05-10
+
+**Full Changelog**: https://github.com/soap/laravel-omise/compare/v1.1.24...v1.1.25
+
+### What's Changed
+
+* Fix typo in Omise class by @soap in https://github.com/soap/laravel-omise/pull/8
+
+**Full Changelog**: https://github.com/soap/laravel-omise/compare/v1.1.24...v1.1.25
+
+## v1.1.24 - 2025-05-10
+
+### What's Changed
+
+* Classes not found by @soap in https://github.com/soap/laravel-omise/pull/7
+
+**Full Changelog**: https://github.com/soap/laravel-omise/compare/v1.1.23...v1.1.24
+
+## v1.1.23 - 2025-05-10
+
+**Full Changelog**: https://github.com/soap/laravel-omise/compare/v1.1.22...v1.1.23
+
+## v1.1.22 - 2025-05-10
+
+### What's Changed
+
+* Develop by @soap in https://github.com/soap/laravel-omise/pull/6
+
+**Full Changelog**: https://github.com/soap/laravel-omise/compare/v1.1.21...v1.1.22
+
 ## v1.1.21 - 2025-05-10
 
 ### What's Changed

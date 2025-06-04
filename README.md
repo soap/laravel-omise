@@ -55,9 +55,9 @@ php artisan omise:verify
 ## Create Omise API Objects
 To create Omise API objects like Charge, Source, Customer you can use Laravel independency injection (Soap\LaravelOmise\Omise) or use app('omise') and the access them like this:
 ```
-$account = app('omise')->account()->retrieve(); // method herer
-$account->livemode; // access property access
-$account->livemode(); // using method access
+$account = app('omise')->account()->retrieve(); // method here
+$account->livemode; // access using property access
+$account->livemode(); // access using method access
 
 $account->api_version; // snake case as return from omise
 $account->apiVersion(); // camelCase if use method to access
@@ -103,7 +103,7 @@ php artisan omise:balance
 
 
 # Verification
-To valid your configuration provided in .env use the following code. Or you can use artisan command omise:verify.
+To validate your configuration provided in .env use the following code. Or you can use artisan command omise:verify.
 
 ```php
 app('omise')->validConfig();
