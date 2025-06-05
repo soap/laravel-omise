@@ -2,6 +2,15 @@
 
 All notable changes to `laravel-omise` will be documented in this file.
 
+## v1.1.32 - 2025-06-05
+
+### What's Changed
+
+* Update README.md by @soap in https://github.com/soap/laravel-omise/pull/16
+* Update packages by @soap in https://github.com/soap/laravel-omise/pull/17
+
+**Full Changelog**: https://github.com/soap/laravel-omise/compare/v1.1.31...v1.1.32
+
 ## v1.1.31 - 2025-06-03
 
 ### What's Changed
