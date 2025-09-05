@@ -2,6 +2,16 @@
 
 All notable changes to `laravel-omise` will be documented in this file.
 
+## Laravel 12 support. - 2025-09-05
+
+### What's Changed
+
+* Bump stefanzweifel/git-auto-commit-action from 5 to 6 by @dependabot[bot] in https://github.com/soap/laravel-omise/pull/18
+* Bump aglipanci/laravel-pint-action from 2.5 to 2.6 by @dependabot[bot] in https://github.com/soap/laravel-omise/pull/19
+* Bump actions/checkout from 4 to 5 by @dependabot[bot] in https://github.com/soap/laravel-omise/pull/20
+
+**Full Changelog**: https://github.com/soap/laravel-omise/compare/v1.1.32...v1.2.0
+
 ## v1.1.32 - 2025-06-05
 
 ### What's Changed
