@@ -41,11 +41,16 @@ class OmisePaymentMethodsCommand extends Command
         foreach ($methods as $method) {
             try {
                 $processor = $paymentManager->getProcessor($method);
-                $requiredParams = $processor->getRequiredParams();
+                if (method_exists($processor, 'getRequiredParams')) {
+                    $requiredParams = $processor->getRequiredParams();
+                    $requiredParamsStr = implode(', ', $requiredParams);
+                } else {
+                    $requiredParamsStr = 'Error: getRequiredParams() not implemented';
+                }
 
                 $tableData[] = [
                     'Method' => $method,
-                    'Required Parameters' => implode(', ', $requiredParams),
+                    'Required Parameters' => $requiredParamsStr,
                     'Type' => class_basename(get_class($processor)),
                 ];
             } catch (\Exception $e) {
