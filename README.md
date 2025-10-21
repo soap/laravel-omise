@@ -52,11 +52,17 @@ Make Omise payment gateway integration easier with Laravel.
 - [Refund Management](#refund-management)
   - [Testing](#testing)
     - [Integration Tests](#integration-tests)
+  - [Development](#development)
+    - [Code Quality Tools](#code-quality-tools)
+      - [PHPStan Static Analysis](#phpstan-static-analysis)
+      - [Running Tests](#running-tests)
+      - [GitHub Actions](#github-actions)
+    - [Contributing](#contributing)
   - [Error Handling](#error-handling)
   - [Troubleshooting](#troubleshooting)
     - [Common Issues](#common-issues)
   - [Changelog](#changelog)
-  - [Contributing](#contributing)
+  - [Contributing](#contributing-1)
   - [Security Vulnerabilities](#security-vulnerabilities)
   - [Credits](#credits)
   - [License](#license)
@@ -813,13 +819,15 @@ vendor/bin/phpstan analyse --configuration=phpstan-v1.neon.dist  # Laravel 10
 vendor/bin/phpstan analyse                                        # Laravel 11+
 ```
 
+**Note**: The v1.x configuration (`phpstan-v1.neon.dist`) automatically handles the env() call issues for older Larastan versions.
+
 **GitHub Actions Failing**
 
-The package automatically handles different PHPStan/Larastan versions for different Laravel versions. If you see errors in CI:
+The package separates testing and static analysis:
+- **Test workflow**: Tests against Laravel 10, 11, 12 without PHPStan
+- **PHPStan workflow**: Runs separate analysis for different Laravel/PHPStan combinations
 
-1. Check the matrix configuration in `.github/workflows/run-tests.yml`
-2. Ensure `composer.json` allows appropriate version ranges
-3. Verify both `phpstan.neon.dist` and `phpstan-v1.neon.dist` exist
+This prevents version conflicts while ensuring code quality across all supported Laravel versions.
 
 **Token Creation Issues**
 - Use Omise.js on frontend to create tokens securely
