@@ -35,7 +35,7 @@ beforeEach(function () {
         define('OMISE_SECRET_KEY', $secretKey);
     }
 
-    // ตั้งค่า config ตาม structure ใหม่
+    // Set config according to the new structure
     config([
         'omise.api.url' => env('OMISE_API_URL', 'https://api.omise.co'),
         'omise.api.version' => env('OMISE_API_VERSION', '2019-05-29'),
