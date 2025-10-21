@@ -250,7 +250,7 @@ it('can create token and full refund charge')
         $refund = $charge->refund(['amount' => 50000]);
         expect($refund)->not->toBeInstanceOf(Error::class);
 
-        // ตรวจสอบสถานะหลัง refund
+        // Check status after refund
         $updatedCharge = app('omise')->charge()->find($charge->id);
 
         return $updatedCharge->isFullyRefunded();
