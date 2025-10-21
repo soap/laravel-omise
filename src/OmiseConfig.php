@@ -17,7 +17,7 @@ class OmiseConfig
         $publicKey = $this->getPublicKey();
         $secretKey = $this->getSecretKey();
 
-        // ตรวจสอบว่าทั้ง key มีค่าและไม่ใช่ string ว่าง
+        // Check that both keys are set and not empty strings
         if (! empty($publicKey) && ! empty($secretKey)) {
             $this->canInitialize = true;
         }
