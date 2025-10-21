@@ -3,7 +3,7 @@
 use Soap\LaravelOmise\Omise\Error;
 
 beforeEach(function () {
-    // โหลด .env ถ้ายังไม่ได้โหลด (สำหรับ Orchestra Testbench)
+    // Load .env if not already loaded (for Orchestra Testbench)
     if (! env('OMISE_TEST_PUBLIC_KEY') && file_exists(__DIR__.'/../../.env')) {
         $dotenv = Dotenv\Dotenv::createImmutable(__DIR__.'/../..');
         $dotenv->load();
