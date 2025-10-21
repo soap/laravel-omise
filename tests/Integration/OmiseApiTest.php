@@ -17,6 +17,11 @@ beforeEach(function () {
         $this->markTestSkipped('Omise test keys not found in environment');
     }
 
+    // Clear any existing app instances to ensure fresh config
+    if (app()->bound('omise')) {
+        app()->forgetInstance('omise');
+    }
+
     $_ENV['OMISE_PUBLIC_KEY'] = $publicKey;
     $_ENV['OMISE_SECRET_KEY'] = $secretKey;
     putenv('OMISE_PUBLIC_KEY='.$publicKey);
@@ -34,8 +39,8 @@ beforeEach(function () {
     config([
         'omise.api.url' => env('OMISE_API_URL', 'https://api.omise.co'),
         'omise.api.version' => env('OMISE_API_VERSION', '2019-05-29'),
-        'omise.keys.test.public' => env('OMISE_TEST_PUBLIC_KEY'),
-        'omise.keys.test.secret' => env('OMISE_TEST_SECRET_KEY'),
+        'omise.keys.test.public' => $publicKey,  // Use actual key value
+        'omise.keys.test.secret' => $secretKey,  // Use actual key value
         'omise.keys.live.public' => env('OMISE_LIVE_PUBLIC_KEY'),
         'omise.keys.live.secret' => env('OMISE_LIVE_SECRET_KEY'),
         'omise.sandbox' => true, // Force sandbox mode for tests
