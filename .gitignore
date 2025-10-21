@@ -1,3 +1,9 @@
+# Environment files
+.env
+.env.local
+.env.testing
+.env.production
+
 # Composer Related
 composer.lock
 /vendor

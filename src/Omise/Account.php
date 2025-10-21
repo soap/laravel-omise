@@ -30,15 +30,16 @@ class Account extends BaseObject
         $this->omiseConfig = $omiseConfig;
     }
 
-    /**
-     * Retrieve account information
-     *
-     * @return \Soap\LaravelOmise\Omise\Error|self
-     */
     public function retrieve()
     {
         try {
-            $this->refresh(OmiseAccount::retrieve($this->omiseConfig->getPublicKey(), $this->omiseConfig->getSecretKey()));
+            $account = OmiseAccount::retrieve(
+                $this->omiseConfig->getPublicKey(),
+                $this->omiseConfig->getSecretKey()
+            );
+
+            $this->refresh($account);
+
         } catch (\Exception $e) {
             return new Error([
                 'code' => 'not_found',

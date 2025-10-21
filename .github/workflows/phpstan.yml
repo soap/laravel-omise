@@ -5,24 +5,51 @@ on:
     paths:
       - '**.php'
       - 'phpstan.neon.dist'
+      - 'phpstan-v1.neon.dist'
+      - 'phpstan-baseline.neon'
       - '.github/workflows/phpstan.yml'
 
 jobs:
   phpstan:
-    name: phpstan
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    
+    strategy:
+      matrix:
+        include:
+          - name: "PHPStan v2.x (Laravel 11+)"
+            php: '8.3'
+            laravel: '^11.0'
+            larastan: '^3.0'
+            phpstan: '^2.0'
+            config: 'phpstan.neon.dist'
+          
+          - name: "PHPStan v1.x (Laravel 10)"
+            php: '8.3'
+            laravel: '^10.0'
+            larastan: '^2.9'
+            phpstan: '^1.11'
+            config: 'phpstan-v1.neon.dist'
+
+    name: ${{ matrix.name }}
+    
     steps:
       - uses: actions/checkout@v5
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: ${{ matrix.php }}
           coverage: none
 
       - name: Install composer dependencies
-        uses: ramsey/composer-install@v3
+        run: |
+          composer require \
+            "laravel/framework:${{ matrix.laravel }}" \
+            "larastan/larastan:${{ matrix.larastan }}" \
+            "phpstan/phpstan:${{ matrix.phpstan }}" \
+            --no-interaction --no-update
+          composer update --prefer-dist --no-interaction
 
       - name: Run PHPStan
-        run: ./vendor/bin/phpstan --error-format=github
+        run: ./vendor/bin/phpstan --error-format=github --no-progress --configuration=${{ matrix.config }}

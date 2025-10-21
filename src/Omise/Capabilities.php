@@ -3,7 +3,7 @@
 namespace Soap\LaravelOmise\Omise;
 
 use Exception;
-use OmiseCapabilities;
+use OmiseCapability;
 use Soap\LaravelOmise\OmiseConfig;
 
 /**
@@ -27,7 +27,7 @@ class Capabilities extends BaseObject
     public function retrieve()
     {
         try {
-            $this->refresh(OmiseCapabilities::retrieve($this->omiseConfig->getPublicKey(), $this->omiseConfig->getSecretKey()));
+            $this->refresh(OmiseCapability::retrieve($this->omiseConfig->getPublicKey(), $this->omiseConfig->getSecretKey()));
         } catch (Exception $e) {
             return new Error([
                 'code' => 'not_found',

@@ -3,7 +3,7 @@
 namespace Soap\LaravelOmise\Omise;
 
 use Carbon\Carbon;
-use OmiseBalance;
+use Soap\LaravelOmise\Http\OmiseHttpClient;
 use Soap\LaravelOmise\Omise\Helpers\OmiseMoney;
 use Soap\LaravelOmise\OmiseConfig;
 
@@ -23,20 +23,23 @@ class Balance extends BaseObject
 {
     private $omiseConfig;
 
+    private static $httpClient;
+
     public function __construct(OmiseConfig $omiseConfig)
     {
         $this->omiseConfig = $omiseConfig;
+
+        if (! self::$httpClient) {
+            self::$httpClient = new OmiseHttpClient($omiseConfig);
+            \Soap\LaravelOmise\Http\EnhancedOmiseBalance::setHttpClient(self::$httpClient);
+        }
     }
 
-    /**
-     * Retrieve balance information
-     *
-     * @return \Soap\LaravelOmise\Omise\Error|self
-     */
-    public function retrieve()
+    public function retrieve($params = [])
     {
         try {
-            $this->refresh(OmiseBalance::retrieve($this->omiseConfig->getPublicKey(), $this->omiseConfig->getSecretKey()));
+            // Use the already initialized HTTP client
+            $this->refresh(\Soap\LaravelOmise\Http\EnhancedOmiseBalance::retrieve($params));
         } catch (\Exception $e) {
             return new Error([
                 'code' => 'not_found',

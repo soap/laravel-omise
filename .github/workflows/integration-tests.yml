@@ -1,0 +1,47 @@
+name: Integration Tests
+
+on:
+  workflow_dispatch: # Manual trigger only
+  push:
+    branches: [main]
+    paths:
+      - 'tests/Integration/**'
+      - 'src/**'
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    # Only run if API keys are available as secrets
+    # This workflow is designed for repositories with Omise API keys configured
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php: [8.3]
+        laravel: [11.*]
+
+    name: Integration Tests - PHP ${{ matrix.php }} / Laravel ${{ matrix.laravel }}
+
+    steps:
+      - name: ⬇️ Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🧰 Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+          tools: composer:v2
+
+      - name: ⚙️ Install dependencies
+        run: |
+          composer require "laravel/framework:${{ matrix.laravel }}" --no-interaction --no-update
+          composer update --prefer-dist --no-interaction
+
+      - name: 🧪 Run integration tests (requires API keys)
+        continue-on-error: true
+        run: ./vendor/bin/pest --group=integration
+        env:
+          OMISE_TEST_PUBLIC_KEY: ${{ secrets.OMISE_TEST_PUBLIC_KEY }}
+          OMISE_TEST_SECRET_KEY: ${{ secrets.OMISE_TEST_SECRET_KEY }}
+          OMISE_SANDBOX_MODE: true
