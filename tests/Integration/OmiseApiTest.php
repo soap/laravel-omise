@@ -187,7 +187,7 @@ it('can create token and partial refund charge')
     ->group('integration')
     ->skip(fn () => ! config('omise.keys.test.public'), 'Sandbox keys not configured')
     ->expect(function () {
-        // สร้าง token
+        // Create token
         $token = app('omise')->token()->create([
             'card' => [
                 'name' => 'Refund Test User',
