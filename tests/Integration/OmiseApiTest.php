@@ -200,7 +200,7 @@ it('can create token and partial refund charge')
 
         expect($token)->not->toBeInstanceOf(Error::class);
 
-        // สร้าง charge
+        // Create charge
         $charge = app('omise')->charge()->create([
             'amount' => 100000, // 1000 THB
             'currency' => 'thb',
