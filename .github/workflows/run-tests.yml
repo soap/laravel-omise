@@ -56,4 +56,4 @@ jobs:
           composer update --prefer-dist --no-interaction
 
       - name: ✅ Run tests
-        run: ./vendor/bin/pest
+        run: ./vendor/bin/pest --exclude-group=integration
