@@ -16,10 +16,31 @@
     backupStaticProperties="false"
 >
     <testsuites>
-        <testsuite name="Soap Test Suite">
-            <directory>tests</directory>
+        <testsuite name="Unit">
+            <directory suffix="Test.php">tests\Unit</directory>
+        </testsuite>
+        <testsuite name="Feature">
+            <directory suffix="Test.php">tests\Feature</directory>
+        </testsuite>
+        <testsuite name="Integration">
+            <directory suffix="Test.php">tests\Integration</directory>
         </testsuite>
     </testsuites>
+    <php>
+        <env name="APP_ENV" value="testing"/>
+        <env name="APP_DEBUG" value="true"/>
+        <env name="CACHE_DRIVER" value="array"/>
+        <env name="SESSION_DRIVER" value="array"/>
+        <env name="QUEUE_CONNECTION" value="sync"/>
+        
+        <!-- Omise Testing Configuration -->
+        <env name="OMISE_LIVE_PUBLIC_KEY" value=""/>
+        <env name="OMISE_LIVE_SECRET_KEY" value=""/>
+        
+        <!-- Pest specific (optional) -->
+        <env name="PEST_PLUGIN_PARALLEL" value="true"/>
+    </php>
+
     <logging>
         <junit outputFile="build/report.junit.xml"/>
     </logging>

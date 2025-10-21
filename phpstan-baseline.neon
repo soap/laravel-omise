@@ -1,0 +1,49 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Call to an undefined static method OmiseAccount\:\:request\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: src/Http/EnhancedOmiseAccount.php
+
+		-
+			message: '#^Call to an undefined static method OmiseBalance\:\:request\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: src/Http/EnhancedOmiseBalance.php
+
+		-
+			message: '#^Call to an undefined static method OmiseCapability\:\:request\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: src/Http/EnhancedOmiseCapabilities.php
+
+		-
+			message: '#^Call to an undefined static method OmiseCharge\:\:request\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: src/Http/EnhancedOmiseCharge.php
+
+		-
+			message: '#^Call to an undefined static method OmiseCustomer\:\:request\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: src/Http/EnhancedOmiseCustomer.php
+
+		-
+			message: '#^Call to an undefined static method OmiseSource\:\:request\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: src/Http/EnhancedOmiseSource.php
+
+		-
+			message: '#^Call to an undefined static method OmiseApiResource\:\:setCurlOptions\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: src/Http/OmiseHttpConfigurator.php
+
+		-
+			message: '#^Property Soap\\LaravelOmise\\Omise\\Balance\:\:\$omiseConfig is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/Omise/Balance.php

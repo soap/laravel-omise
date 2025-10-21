@@ -3,10 +3,11 @@
 namespace Soap\LaravelOmise\Tests;
 
 use Orchestra\Testbench\TestCase as Orchestra;
-use Soap\LaravelOmise\LaravelOmiseServiceProvider;
 
 class TestCase extends Orchestra
 {
+    protected $loadEnvironmentVariables = true;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -15,17 +16,19 @@ class TestCase extends Orchestra
     protected function getPackageProviders($app)
     {
         return [
-            LaravelOmiseServiceProvider::class,
+            'Soap\LaravelOmise\LaravelOmiseServiceProvider',
         ];
     }
 
-    public function getEnvironmentSetUp($app)
+    protected function defineEnvironment($app)
     {
-        // config()->set('database.default', 'testing');
-
-        /*
-        $migration = include __DIR__.'/../database/migrations/create_laravel-omise_table.php.stub';
-        $migration->up();
-        */
+        // ตรวจสอบว่า .env โหลดหรือไม่
+        if (! env('OMISE_SANDBOX_STATUS')) {
+            // ถ้าไม่โหลด ให้โหลดเอง
+            if (file_exists(__DIR__.'/../../.env')) {
+                $dotenv = \Dotenv\Dotenv::createImmutable(__DIR__.'/../..');
+                $dotenv->load();
+            }
+        }
     }
 }

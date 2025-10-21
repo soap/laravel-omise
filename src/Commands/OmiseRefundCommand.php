@@ -14,9 +14,20 @@ class OmiseRefundCommand extends Command
     {
         $chargeId = $this->ask('Enter the charge ID to refund');
 
-        $amount = $this->ask('Enter the amount to refund');
+        $amount = $this->ask('Enter the amount to refund (in smallest currency unit)');
 
-        $response = app('omise')->charge()->refund($chargeId, $amount);
+        // First, retrieve the charge
+        $charge = app('omise')->charge()->find($chargeId);
+
+        if ($charge instanceof \Soap\LaravelOmise\Omise\Error) {
+            $this->error('Failed to find charge');
+            $this->error($charge->getMessage());
+
+            return self::FAILURE;
+        }
+
+        // Now refund the charge
+        $response = $charge->refund(['amount' => (int) $amount]);
 
         if ($response instanceof \Soap\LaravelOmise\Omise\Error) {
             $this->error('Omise api call failed');

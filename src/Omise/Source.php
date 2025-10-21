@@ -3,7 +3,7 @@
 namespace Soap\LaravelOmise\Omise;
 
 use Exception;
-use OmiseSource;
+use Soap\LaravelOmise\Http\OmiseHttpClient;
 use Soap\LaravelOmise\OmiseConfig;
 
 /**
@@ -22,18 +22,29 @@ class Source extends BaseObject
 {
     private $omiseConfig;
 
-    /**
-     * Injecting dependencies
-     */
+    private static $httpClient;
+
     public function __construct(OmiseConfig $omiseConfig)
     {
         $this->omiseConfig = $omiseConfig;
+
+        if (! self::$httpClient) {
+            self::$httpClient = new OmiseHttpClient($omiseConfig);
+            \Soap\LaravelOmise\Http\EnhancedOmiseSource::setHttpClient(self::$httpClient);
+        }
     }
 
     public function create($params)
     {
         try {
-            $this->refresh(OmiseSource::create($params, $this->omiseConfig->getPublicKey(), $this->omiseConfig->getSecretKey()));
+            $source = \Soap\LaravelOmise\Http\EnhancedOmiseSource::create(
+                $params,
+                $this->omiseConfig->getPublicKey(),
+                $this->omiseConfig->getSecretKey()
+            );
+
+            $this->refresh($source);
+
         } catch (Exception $e) {
             return new Error([
                 'code' => 'bad_request',
@@ -44,10 +55,11 @@ class Source extends BaseObject
         return $this;
     }
 
-    public function retrieve($id)
+    public function retrieve($sourceId)
     {
         try {
-            $this->refresh(OmiseSource::retrieve($id, $this->omiseConfig->getPublicKey(), $this->omiseConfig->getSecretKey()));
+            // Use the already initialized HTTP client
+            $this->refresh(\Soap\LaravelOmise\Http\EnhancedOmiseSource::retrieve($sourceId));
         } catch (Exception $e) {
             return new Error([
                 'code' => 'not_found',
