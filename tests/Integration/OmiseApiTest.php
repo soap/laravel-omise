@@ -147,7 +147,7 @@ it('can create multiple charges with different tokens')
     ->expect(function () {
         $results = [];
 
-        // สร้าง 3 charges ด้วย tokens แยกกัน
+        // Create 3 charges with separate tokens
         for ($i = 1; $i <= 3; $i++) {
             $token = app('omise')->token()->create([
                 'card' => [
