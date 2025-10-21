@@ -694,6 +694,49 @@ The package includes comprehensive integration tests that make real API calls to
 
 **Note**: Integration tests use real API calls and may count against your API limits. Always use sandbox keys for testing.
 
+## Development
+
+### Code Quality Tools
+
+This package uses several tools to maintain code quality across different Laravel versions:
+
+#### PHPStan Static Analysis
+- **Laravel 10**: Uses PHPStan v1.x with Larastan v2.9
+- **Laravel 11+**: Uses PHPStan v2.x with Larastan v3.0
+
+```bash
+# For current Laravel version
+vendor/bin/phpstan analyse
+
+# For Laravel 10 compatibility
+vendor/bin/phpstan analyse --configuration=phpstan-v1.neon.dist
+```
+
+#### Running Tests
+```bash
+# All tests
+vendor/bin/pest
+
+# Integration tests only
+vendor/bin/pest --group=integration
+
+# Code formatting
+vendor/bin/pint
+```
+
+#### GitHub Actions
+The package automatically tests against:
+- **PHP**: 8.3, 8.4
+- **Laravel**: 10.x, 11.x, 12.x
+- **PHPStan**: Appropriate versions for each Laravel version
+
+### Contributing
+
+When contributing, ensure:
+1. Tests pass for all Laravel versions
+2. PHPStan analysis is clean
+3. Code follows PSR-12 standards (use `vendor/bin/pint`)
+
 ## Error Handling
 
 The package returns `Error` objects when API calls fail:
@@ -753,6 +796,30 @@ OMISE_TEST_SECRET_KEY=skey_test_xxxxxxxxxxxxxxxxxxxxx
 # Run connectivity test first
 vendor/bin/pest --filter="can verify omise configuration and connectivity"
 ```
+
+**PHPStan/Larastan Version Conflicts**
+
+If you encounter PHPStan or Larastan version conflicts:
+
+```bash
+# For Laravel 10 projects
+composer require larastan/larastan:^2.9 phpstan/phpstan:^1.11 --dev
+
+# For Laravel 11+ projects  
+composer require larastan/larastan:^3.0 phpstan/phpstan:^2.0 --dev
+
+# Run analysis with appropriate config
+vendor/bin/phpstan analyse --configuration=phpstan-v1.neon.dist  # Laravel 10
+vendor/bin/phpstan analyse                                        # Laravel 11+
+```
+
+**GitHub Actions Failing**
+
+The package automatically handles different PHPStan/Larastan versions for different Laravel versions. If you see errors in CI:
+
+1. Check the matrix configuration in `.github/workflows/run-tests.yml`
+2. Ensure `composer.json` allows appropriate version ranges
+3. Verify both `phpstan.neon.dist` and `phpstan-v1.neon.dist` exist
 
 **Token Creation Issues**
 - Use Omise.js on frontend to create tokens securely
