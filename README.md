@@ -15,7 +15,6 @@ Make Omise payment gateway integration easier with Laravel.
 - 🧪 **Comprehensive Testing** - Full test suite with real API integration tests
 - 🎛️ **Artisan Commands** - Built-in commands for account verification and management
 - 📱 **Token Management** - Secure card tokenization support
-- � **Token Management** - Secure card tokenization support
 - �💰 **Refund Support** - Full and partial refund capabilities
 - 🔄 **Error Handling** - Robust error handling with detailed error objects
 
