@@ -19,6 +19,30 @@ class OmiseConfig
         }
     }
 
+    public function validate(): array
+    {
+        $errors = [];
+
+        if (empty($this->getPublicKey())) {
+            $errors[] = 'Public key is missing';
+        }
+
+        if (empty($this->getSecretKey())) {
+            $errors[] = 'Secret key is missing';
+        }
+
+        if (empty($this->getUrl())) {
+            $errors[] = 'API URL is missing';
+        }
+
+        return $errors;
+    }
+
+    public function isValid(): bool
+    {
+        return empty($this->validate());
+    }
+
     public function canInitialize()
     {
         return $this->canInitialize;

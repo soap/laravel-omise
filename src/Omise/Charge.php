@@ -54,15 +54,44 @@ class Charge extends BaseObject
     public function find($id)
     {
         try {
-            $this->refresh(OmiseCharge::retrieve($id, $this->omiseConfig->getPublicKey(), $this->omiseConfig->getSecretKey()));
+            $result = OmiseCharge::retrieve($id, $this->omiseConfig->getPublicKey(), $this->omiseConfig->getSecretKey());
+
+            if (! $result) {
+                return new Error([
+                    'code' => 'not_found',
+                    'message' => 'Charge not found or API returned null',
+                ]);
+            }
+
+            $this->refresh($result);
+
+            // Validate that the object was properly loaded
+            if (! $this->object || ! isset($this->object['id'])) {
+                return new Error([
+                    'code' => 'invalid_response',
+                    'message' => 'Charge object was not properly loaded from API response',
+                ]);
+            }
+
         } catch (Exception $e) {
             return new Error([
-                'code' => 'not_found',
+                'code' => 'api_error',
                 'message' => $e->getMessage(),
             ]);
         }
 
         return $this;
+    }
+
+    /**
+     * For compatibility purpose
+     *
+     * @param  string  $id
+     * @return \Soap\LaravelOmise\Omise\Error|self
+     */
+    public function retrieve($id)
+    {
+        return $this->find($id);
     }
 
     /**
@@ -198,5 +227,37 @@ class Charge extends BaseObject
     public function isFullyRefunded(): bool
     {
         return (($this->amount / 100) - $this->getRefundedAmount()) === 0;
+    }
+
+    /**
+     * Get debug information about the charge object
+     */
+    public function getDebugInfo(): array
+    {
+        $objectKeys = null;
+        if ($this->object) {
+            if (is_array($this->object)) {
+                $objectKeys = array_keys($this->object);
+            } else {
+                $objectKeys = array_keys(get_object_vars($this->object));
+            }
+        }
+
+        return [
+            'object_loaded' => $this->isLoaded(),
+            'object_type' => $this->object ? gettype($this->object) : null,
+            'has_id' => $this->hasProperty('id'),
+            'has_status' => $this->hasProperty('status'),
+            'has_paid' => $this->hasProperty('paid'),
+            'object_keys' => $objectKeys,
+        ];
+    }
+
+    /**
+     * Validate that charge has all required properties
+     */
+    public function isValid(): bool
+    {
+        return $this->validateProperties(['id', 'status', 'paid', 'amount', 'currency']);
     }
 }

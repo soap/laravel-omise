@@ -50,6 +50,12 @@ class Omise
 
     public function charge()
     {
+        if (! $this->validConfig()) {
+            \Log::error('Omise configuration is invalid', [
+                'errors' => $this->config->validate(),
+            ]);
+        }
+
         return new Charge($this->config);
     }
 
