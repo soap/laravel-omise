@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-omise` will be documented in this file.
 
+## Enhance object handle for charge object. - 2025-10-23
+
+**Full Changelog**: https://github.com/soap/laravel-omise/compare/v1.1.32...v1.2.1
+
 ## Laravel 12 support. - 2025-09-05
 
 ### What's Changed
