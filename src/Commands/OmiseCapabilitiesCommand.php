@@ -23,6 +23,7 @@ class OmiseCapabilitiesCommand extends Command
         if ($capabilities instanceof Error) {
             $this->error('❌ Failed to retrieve capabilities:');
             $this->error($capabilities->getMessage());
+
             return self::FAILURE;
         }
 
@@ -44,11 +45,11 @@ class OmiseCapabilitiesCommand extends Command
 
         // Account Information
         $this->displayAccountInfo($capabilities);
-        
+
         // Quick Summary
         $this->displayQuickSummary($capabilities);
-        
-        // Limits Information  
+
+        // Limits Information
         $this->displayLimits($capabilities);
 
         // Payment Methods
@@ -73,6 +74,7 @@ class OmiseCapabilitiesCommand extends Command
         ];
 
         $this->line(json_encode($data, JSON_PRETTY_PRINT));
+
         return self::SUCCESS;
     }
 
@@ -86,7 +88,7 @@ class OmiseCapabilitiesCommand extends Command
             ['Zero Interest Installments', $capabilities->zero_interest_installments ? '✅ Enabled' : '❌ Disabled'],
             ['Supported Banks', count($capabilities->getSupportedBanks())],
         ];
-        
+
         $this->table($headers, $rows);
         $this->newLine();
     }
@@ -94,27 +96,27 @@ class OmiseCapabilitiesCommand extends Command
     private function displayQuickSummary($capabilities): void
     {
         $this->info('📊 Quick Summary:');
-        
+
         $paymentMethods = $capabilities->getAllPaymentMethods();
         $installmentMethods = $capabilities->getInstallmentBackends();
         $currencies = $capabilities->getSupportedCurrencies();
         $tokenMethods = $capabilities->getTokenizationMethods() ?? [];
-        
+
         $headers = ['Category', 'Count', 'Details'];
         $rows = [
             ['Payment Methods', count($paymentMethods), 'Total available payment options'],
             ['Installment Options', count($installmentMethods), 'Banks offering installment payments'],
-            ['Supported Currencies', count($currencies), implode(', ', array_slice($currencies, 0, 5)) . (count($currencies) > 5 ? '...' : '')],
+            ['Supported Currencies', count($currencies), implode(', ', array_slice($currencies, 0, 5)).(count($currencies) > 5 ? '...' : '')],
             ['Digital Wallets', count($tokenMethods), implode(', ', $tokenMethods)],
         ];
-        
+
         $this->table($headers, $rows);
         $this->newLine();
     }
 
     private function displayLimits($capabilities): void
     {
-        if (!$capabilities->limits) {
+        if (! $capabilities->limits) {
             return;
         }
 
@@ -123,8 +125,8 @@ class OmiseCapabilitiesCommand extends Command
         $rows = [];
 
         foreach ($capabilities->limits as $type => $limit) {
-            $min = isset($limit['min']) ? number_format($limit['min'] / 100, 2) . ' THB' : 'N/A';
-            $max = isset($limit['max']) ? number_format($limit['max'] / 100, 2) . ' THB' : 'N/A';
+            $min = isset($limit['min']) ? number_format($limit['min'] / 100, 2).' THB' : 'N/A';
+            $max = isset($limit['max']) ? number_format($limit['max'] / 100, 2).' THB' : 'N/A';
             $rows[] = [ucfirst(str_replace('_', ' ', $type)), $min, $max];
         }
 
@@ -138,9 +140,10 @@ class OmiseCapabilitiesCommand extends Command
 
         try {
             $methods = $this->getFilteredPaymentMethods($capabilities, $currency, $type);
-            
+
             if (empty($methods)) {
                 $this->warn('No payment methods found for the specified filters.');
+
                 return;
             }
 
@@ -149,27 +152,27 @@ class OmiseCapabilitiesCommand extends Command
 
             foreach ($methods as $method) {
                 $currencies = is_array($method['currencies']) ? implode(', ', $method['currencies']) : 'N/A';
-                
+
                 $features = [];
                 if ($method['installment_terms']) {
-                    $features[] = 'Installments: ' . implode(', ', $method['installment_terms']) . ' months';
+                    $features[] = 'Installments: '.implode(', ', $method['installment_terms']).' months';
                 }
                 if ($method['card_brands']) {
-                    $features[] = 'Cards: ' . implode(', ', $method['card_brands']);
+                    $features[] = 'Cards: '.implode(', ', $method['card_brands']);
                 }
-                
+
                 $rows[] = [
                     $method['name'],
                     $method['type'],
                     $currencies,
-                    !empty($features) ? implode('; ', $features) : 'Standard payment'
+                    ! empty($features) ? implode('; ', $features) : 'Standard payment',
                 ];
             }
 
             $this->table($headers, $rows);
-            $this->line('📊 Total methods found: ' . count($methods));
+            $this->line('📊 Total methods found: '.count($methods));
         } catch (\Exception $e) {
-            $this->warn('Unable to retrieve payment methods: ' . $e->getMessage());
+            $this->warn('Unable to retrieve payment methods: '.$e->getMessage());
         }
 
         $this->newLine();
@@ -177,25 +180,25 @@ class OmiseCapabilitiesCommand extends Command
 
     private function displayZeroInterestInfo($capabilities): void
     {
-        if (!$capabilities->zero_interest_installments) {
+        if (! $capabilities->zero_interest_installments) {
             return;
         }
 
         $this->info('🎁 Zero Interest Installments:');
         $this->line('✅ Your account supports zero interest installment payments');
-        
+
         try {
             $installmentMethods = $capabilities->getInstallmentBackends();
-            if (!empty($installmentMethods)) {
+            if (! empty($installmentMethods)) {
                 $this->line('Available installment options:');
                 foreach ($installmentMethods as $method) {
                     $terms = $method['installment_terms'] ?? [];
-                    $this->line('  • ' . ($method['name'] ?? $method['_id']) . 
-                              ' (Terms: ' . implode(', ', $terms) . ' months)');
+                    $this->line('  • '.($method['name'] ?? $method['_id']).
+                              ' (Terms: '.implode(', ', $terms).' months)');
                 }
             }
         } catch (\Exception $e) {
-            $this->warn('Unable to retrieve installment details: ' . $e->getMessage());
+            $this->warn('Unable to retrieve installment details: '.$e->getMessage());
         }
     }
 
@@ -303,22 +306,52 @@ class OmiseCapabilitiesCommand extends Command
 
     private function getPaymentMethodType($methodId): string
     {
-        if (strpos($methodId, 'card') !== false) return 'Card Payment';
-        if (strpos($methodId, 'mobile_banking') !== false) return 'Mobile Banking';
-        if (strpos($methodId, 'direct_debit') !== false) return 'Direct Debit';
-        if (strpos($methodId, 'installment') !== false) return 'Installment Payment';
-        if (strpos($methodId, 'bill_payment') !== false) return 'Bill Payment';
-        if (strpos($methodId, 'barcode') !== false) return 'Barcode Payment';
-        if (strpos($methodId, 'qr') !== false) return 'QR Payment';
-        if (in_array($methodId, ['promptpay', 'paynow'])) return 'QR Payment';
-        if (in_array($methodId, ['alipay', 'alipay_cn', 'alipay_hk', 'alipayplus_mpm', 'alipayplus_upm'])) return 'Alipay Wallet';
-        if (in_array($methodId, ['wechat_pay', 'wechat_pay_mpm', 'wechat_pay_upm'])) return 'WeChat Pay';
-        if (in_array($methodId, ['truemoney', 'truemoney_jumpapp', 'truemoney_qr'])) return 'TrueMoney Wallet';
-        if (in_array($methodId, ['shopeepay', 'shopeepay_jumpapp'])) return 'ShopeePay Wallet';
-        if (in_array($methodId, ['googlepay', 'applepay'])) return 'Digital Wallet';
-        if (in_array($methodId, ['grabpay', 'rabbit_linepay', 'kakaopay', 'touch_n_go', 'dana', 'gcash'])) return 'Digital Wallet';
-        if (in_array($methodId, ['atome', 'atome_qr'])) return 'Buy Now Pay Later';
-        
+        if (strpos($methodId, 'card') !== false) {
+            return 'Card Payment';
+        }
+        if (strpos($methodId, 'mobile_banking') !== false) {
+            return 'Mobile Banking';
+        }
+        if (strpos($methodId, 'direct_debit') !== false) {
+            return 'Direct Debit';
+        }
+        if (strpos($methodId, 'installment') !== false) {
+            return 'Installment Payment';
+        }
+        if (strpos($methodId, 'bill_payment') !== false) {
+            return 'Bill Payment';
+        }
+        if (strpos($methodId, 'barcode') !== false) {
+            return 'Barcode Payment';
+        }
+        if (strpos($methodId, 'qr') !== false) {
+            return 'QR Payment';
+        }
+        if (in_array($methodId, ['promptpay', 'paynow'])) {
+            return 'QR Payment';
+        }
+        if (in_array($methodId, ['alipay', 'alipay_cn', 'alipay_hk', 'alipayplus_mpm', 'alipayplus_upm'])) {
+            return 'Alipay Wallet';
+        }
+        if (in_array($methodId, ['wechat_pay', 'wechat_pay_mpm', 'wechat_pay_upm'])) {
+            return 'WeChat Pay';
+        }
+        if (in_array($methodId, ['truemoney', 'truemoney_jumpapp', 'truemoney_qr'])) {
+            return 'TrueMoney Wallet';
+        }
+        if (in_array($methodId, ['shopeepay', 'shopeepay_jumpapp'])) {
+            return 'ShopeePay Wallet';
+        }
+        if (in_array($methodId, ['googlepay', 'applepay'])) {
+            return 'Digital Wallet';
+        }
+        if (in_array($methodId, ['grabpay', 'rabbit_linepay', 'kakaopay', 'touch_n_go', 'dana', 'gcash'])) {
+            return 'Digital Wallet';
+        }
+        if (in_array($methodId, ['atome', 'atome_qr'])) {
+            return 'Buy Now Pay Later';
+        }
+
         return 'Digital Payment';
     }
 }
