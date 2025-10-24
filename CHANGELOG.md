@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-omise` will be documented in this file.
 
+## Enhanced capabilities retrieval - 2025-10-24
+
+**Full Changelog**: https://github.com/soap/laravel-omise/compare/v1.2.3...v1.2.4
+
 ## Enhanced baseObject - 2025-10-23
 
 **Full Changelog**: https://github.com/soap/laravel-omise/compare/v1.1.32...v1.2.2
