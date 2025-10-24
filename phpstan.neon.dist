@@ -11,5 +11,3 @@ parameters:
     ignoreErrors:
         # Ignore config env() calls - they are valid in config files
         - '#Called .env. outside of the config directory#'
-        # Ignore missing Omise SDK classes (external dependency)
-        - '#Call to static method .* on an unknown class Omise.*#'

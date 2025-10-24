@@ -58,17 +58,35 @@ class Capabilities extends BaseObject
     public function getInstallmentBackends($currency = '', $amount = null)
     {
         $this->ensureDataExists();
-        $params = [];
-        $params[] = $this->object->backendFilter['type']('installment');
+        
+        if (!$this->object || !isset($this->object['payment_methods'])) {
+            return [];
+        }
 
+        $paymentMethods = $this->object['payment_methods'];
+        
+        // Filter for installment methods
+        $installmentMethods = array_filter($paymentMethods, function($method) {
+            return strpos($method['name'], 'installment_') === 0 && 
+                   !empty($method['installment_terms']);
+        });
+
+        // Apply currency filter
         if ($currency) {
-            $params[] = $this->object->backendFilter['currency']($currency);
-        }
-        if (! is_null($amount)) {
-            $params[] = $this->object->backendFilter['chargeAmount']($amount);
+            $installmentMethods = array_filter($installmentMethods, function($method) use ($currency) {
+                return in_array(strtoupper($currency), $method['currencies'] ?? []);
+            });
         }
 
-        return $this->getBackends($params);
+        // Apply amount filter based on limits
+        if (!is_null($amount) && isset($this->object['limits']['installment_amount']['min'])) {
+            $minAmount = $this->object['limits']['installment_amount']['min'];
+            if ($amount < $minAmount) {
+                return []; // Amount too low for installments
+            }
+        }
+
+        return array_values($installmentMethods);
     }
 
     /**
@@ -79,12 +97,30 @@ class Capabilities extends BaseObject
     public function getBackends($currency = '')
     {
         $this->ensureDataExists();
-        $params = [];
-        if ($currency) {
-            $params[] = $this->object->backendFilter['currency']($currency);
+        
+        if (!$this->object || !isset($this->object['payment_methods'])) {
+            return [];
         }
 
-        return $this->getBackends($params);
+        $paymentMethods = $this->object['payment_methods'];
+        
+        if ($currency) {
+            return array_filter($paymentMethods, function($method) use ($currency) {
+                return in_array(strtoupper($currency), $method['currencies'] ?? []);
+            });
+        }
+
+        return $paymentMethods;
+    }
+
+    /**
+     * Get all payment backends (alias for getBackends)
+     *
+     * @return array
+     */
+    public function getAllPaymentMethods()
+    {
+        return $this->getBackends();
     }
 
     /**
@@ -93,13 +129,46 @@ class Capabilities extends BaseObject
     public function getBackendByType($sourceType)
     {
         $this->ensureDataExists();
-        $params = [];
-        $params[] = $this->object->backendFilter['type']($sourceType);
-        $backend = $this->getBackends($params);
+        
+        if (!$this->object || !isset($this->object['payment_methods'])) {
+            return null;
+        }
 
-        // Only variables hould be passed
-        // https://www.php.net/reset
-        return reset($backend);
+        $paymentMethods = $this->object['payment_methods'];
+        
+        // Find method by exact name match
+        foreach ($paymentMethods as $method) {
+            if ($method['name'] === $sourceType) {
+                return $method;
+            }
+        }
+
+        // Find method by partial name match (for types like 'installment', 'mobile_banking', etc.)
+        foreach ($paymentMethods as $method) {
+            if (strpos($method['name'], $sourceType) !== false) {
+                return $method;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Get payment methods by category/type
+     */
+    public function getPaymentMethodsByType($type)
+    {
+        $this->ensureDataExists();
+        
+        if (!$this->object || !isset($this->object['payment_methods'])) {
+            return [];
+        }
+
+        $paymentMethods = $this->object['payment_methods'];
+        
+        return array_filter($paymentMethods, function($method) use ($type) {
+            return strpos($method['name'], $type) !== false;
+        });
     }
 
     /**
@@ -129,15 +198,114 @@ class Capabilities extends BaseObject
     }
 
     /**
-     * @return array list of omise backends sourc_type.
+     * @return array list of omise backends source_type.
+     */
+    public function getAvailablePaymentMethods()
+    {
+        try {
+            $this->ensureDataExists();
+            
+            if (!$this->object || !isset($this->object['payment_methods'])) {
+                return $this->getTokenizationMethods() ?? [];
+            }
+
+            $paymentMethods = $this->object['payment_methods'];
+            $methodNames = array_column($paymentMethods, 'name');
+            $tokenMethods = $this->getTokenizationMethods() ?? [];
+
+            return array_merge($methodNames, $tokenMethods);
+        } catch (\Exception $e) {
+            return $this->getTokenizationMethods() ?? [];
+        }
+    }
+
+    /**
+     * @deprecated Use getAvailablePaymentMethods() instead
+     * @return array list of omise backends source_type.
      */
     public function getAavailablePaymentMethods()
     {
-        $backends = $this->getBackends();
-        $backends = json_decode(json_encode($backends), true);
-        $token_methods = $this->getTokenizationMethods();
+        return $this->getAvailablePaymentMethods();
+    }
 
-        return array_merge(array_column($backends, '_id'), $token_methods);
+    /**
+     * Get all capabilities data as array
+     */
+    public function toArray(): array
+    {
+        $this->ensureDataExists();
+        
+        return [
+            'object' => $this->object['object'] ?? 'capability',
+            'location' => $this->object['location'] ?? null,
+            'country' => $this->object['country'] ?? null,
+            'banks' => $this->object['banks'] ?? [],
+            'limits' => $this->object['limits'] ?? [],
+            'payment_methods' => $this->object['payment_methods'] ?? [],
+            'tokenization_methods' => $this->object['tokenization_methods'] ?? [],
+            'zero_interest_installments' => $this->object['zero_interest_installments'] ?? false,
+        ];
+    }
+
+    /**
+     * Get supported banks
+     */
+    public function getSupportedBanks(): array
+    {
+        $this->ensureDataExists();
+        return $this->object['banks'] ?? [];
+    }
+
+    /**
+     * Get country code
+     */
+    public function getCountry(): ?string
+    {
+        $this->ensureDataExists();
+        return $this->object['country'] ?? null;
+    }
+
+    /**
+     * Get supported currencies from all payment methods
+     */
+    public function getSupportedCurrencies(): array
+    {
+        $this->ensureDataExists();
+        
+        if (!$this->object || !isset($this->object['payment_methods'])) {
+            return [];
+        }
+
+        $allCurrencies = [];
+        foreach ($this->object['payment_methods'] as $method) {
+            if (isset($method['currencies'])) {
+                $allCurrencies = array_merge($allCurrencies, $method['currencies']);
+            }
+        }
+
+        return array_unique($allCurrencies);
+    }
+
+    /**
+     * Check if a specific payment method is available
+     */
+    public function hasPaymentMethod(string $method): bool
+    {
+        $available = $this->getAvailablePaymentMethods();
+        return in_array($method, $available);
+    }
+
+    /**
+     * Check if installment payments are supported
+     */
+    public function supportsInstallments(): bool
+    {
+        try {
+            $installmentBackends = $this->getInstallmentBackends();
+            return !empty($installmentBackends);
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 
     public function getInstallmentMinLimit()
