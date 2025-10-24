@@ -27,7 +27,7 @@ class Capabilities extends BaseObject
     {
         try {
             // Use fully qualified class name to avoid PHPStan errors
-            $this->refresh(\OmiseCapabilities::retrieve($this->omiseConfig->getPublicKey(), $this->omiseConfig->getSecretKey()));
+            $this->refresh(\OmiseCapability::retrieve($this->omiseConfig->getPublicKey(), $this->omiseConfig->getSecretKey()));
         } catch (Exception $e) {
             return new Error([
                 'code' => 'not_found',
