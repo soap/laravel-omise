@@ -41,7 +41,7 @@ class BaseObject
      */
     public function hasProperty(string $key): bool
     {
-        if (!$this->object) {
+        if (! $this->object) {
             return false;
         }
 
@@ -63,7 +63,7 @@ class BaseObject
      */
     public function getProperty(string $key, $default = null)
     {
-        if (!$this->object) {
+        if (! $this->object) {
             return $default;
         }
 
@@ -85,12 +85,12 @@ class BaseObject
      */
     public function validateProperties(array $requiredProperties): bool
     {
-        if (!$this->isLoaded()) {
+        if (! $this->isLoaded()) {
             return false;
         }
 
         foreach ($requiredProperties as $property) {
-            if (!$this->hasProperty($property)) {
+            if (! $this->hasProperty($property)) {
                 return false;
             }
         }

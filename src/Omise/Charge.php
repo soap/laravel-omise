@@ -56,7 +56,7 @@ class Charge extends BaseObject
         try {
             $result = OmiseCharge::retrieve($id, $this->omiseConfig->getPublicKey(), $this->omiseConfig->getSecretKey());
 
-            if (!$result) {
+            if (! $result) {
                 return new Error([
                     'code' => 'not_found',
                     'message' => 'Charge not found or API returned null',
@@ -66,7 +66,7 @@ class Charge extends BaseObject
             $this->refresh($result);
 
             // Validate that the object was properly loaded with required properties
-            if (!$this->hasProperty('id')) {
+            if (! $this->hasProperty('id')) {
                 return new Error([
                     'code' => 'invalid_response',
                     'message' => 'Charge object was not properly loaded from API response',

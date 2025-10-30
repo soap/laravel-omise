@@ -83,8 +83,6 @@ class Customer extends BaseObject
 
     /**
      * Convert to array representation
-     *
-     * @return array
      */
     public function toArray(): array
     {
