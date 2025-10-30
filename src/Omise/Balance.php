@@ -71,4 +71,25 @@ class Balance extends BaseObject
     {
         return Carbon::parse($this->created_at);
     }
+
+    /**
+     * Convert to array representation
+     *
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return [
+            'object' => $this->object,
+            'livemode' => $this->livemode,
+            'location' => $this->location ?? null,
+            'total' => $this->total,
+            'available' => $this->available ?? null,
+            'currency' => $this->currency,
+            'transferable' => $this->transferable,
+            'reserve' => $this->reserve,
+            'on_hold' => $this->on_hold ?? null,
+            'created_at' => $this->created_at ?? null,
+        ];
+    }
 }

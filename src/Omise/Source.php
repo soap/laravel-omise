@@ -57,4 +57,24 @@ class Source extends BaseObject
 
         return $this;
     }
+
+    /**
+     * Convert to array representation
+     *
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->id ?? null,
+            'object' => 'source',
+            'livemode' => $this->livemode ?? false,
+            'location' => $this->location ?? null,
+            'type' => $this->type ?? null,
+            'flow' => $this->flow ?? null,
+            'amount' => $this->amount ?? null,
+            'currency' => $this->currency ?? null,
+            'created_at' => $this->created_at ?? null,
+        ];
+    }
 }

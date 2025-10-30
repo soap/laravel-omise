@@ -33,7 +33,7 @@ class BaseObject
      */
     public function isLoaded(): bool
     {
-        return $this->object !== null && is_array($this->object);
+        return $this->object !== null;
     }
 
     /**
@@ -41,7 +41,21 @@ class BaseObject
      */
     public function hasProperty(string $key): bool
     {
-        return $this->isLoaded() && isset($this->object[$key]);
+        if (!$this->object) {
+            return false;
+        }
+
+        // Check if it's an array
+        if (is_array($this->object)) {
+            return isset($this->object[$key]);
+        }
+
+        // Check if it's an object with the property
+        if (is_object($this->object)) {
+            return property_exists($this->object, $key) || isset($this->object->$key);
+        }
+
+        return false;
     }
 
     /**
@@ -49,7 +63,21 @@ class BaseObject
      */
     public function getProperty(string $key, $default = null)
     {
-        return $this->hasProperty($key) ? $this->object[$key] : $default;
+        if (!$this->object) {
+            return $default;
+        }
+
+        // Handle array access
+        if (is_array($this->object)) {
+            return $this->object[$key] ?? $default;
+        }
+
+        // Handle object access
+        if (is_object($this->object)) {
+            return $this->object->$key ?? $default;
+        }
+
+        return $default;
     }
 
     /**
@@ -57,12 +85,12 @@ class BaseObject
      */
     public function validateProperties(array $requiredProperties): bool
     {
-        if (! $this->isLoaded()) {
+        if (!$this->isLoaded()) {
             return false;
         }
 
         foreach ($requiredProperties as $property) {
-            if (! $this->hasProperty($property)) {
+            if (!$this->hasProperty($property)) {
                 return false;
             }
         }

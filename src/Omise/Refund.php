@@ -45,4 +45,26 @@ class Refund extends BaseObject
 
         return $this;
     }
+
+    /**
+     * Convert to array representation
+     *
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->id ?? null,
+            'object' => $this->object ?? 'refund',
+            'livemode' => $this->livemode ?? false,
+            'location' => $this->location ?? null,
+            'amount' => $this->amount ?? null,
+            'currency' => $this->currency ?? null,
+            'charge' => $this->charge ?? null,
+            'transaction' => $this->transaction ?? null,
+            'status' => $this->status ?? null,
+            'metadata' => $this->metadata ?? [],
+            'created_at' => $this->created_at ?? null,
+        ];
+    }
 }

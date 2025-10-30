@@ -2,6 +2,70 @@
 
 All notable changes to `laravel-omise` will be documented in this file.
 
+## v1.2.0 - 2025-10-30
+
+### Major Improvements
+
+#### Enhanced Capabilities Support
+* **New:** Comprehensive `OmiseCapabilitiesCommand` with filtering and JSON export
+* **New:** Added support for 40+ payment methods with Thai-friendly names
+* **New:** Methods for checking supported currencies, banks, and payment methods
+* **Improved:** Better capabilities API handling with proper filtering
+
+#### Better Object Handling
+* **Fixed:** Critical bug where Charge objects couldn't access properties from Omise SDK
+* **Improved:** BaseObject now supports both array and object property access
+* **New:** Added `hasProperty()`, `getProperty()`, and `validateProperties()` methods
+* **New:** Charge validation with `isValid()` and `getDebugInfo()` methods
+
+#### Enhanced Commands
+* **Improved:** `omise:capabilities` command with `--currency`, `--type`, and `--format` options
+* **Improved:** Better command output formatting with emoji and tables
+* **New:** Support for payment method categorization (Card, QR, Wallet, etc.)
+
+#### Developer Experience
+* **New:** Comprehensive README with detailed examples
+* **New:** Capabilities command documentation
+* **Improved:** PHPStan Level 5 compliance maintained
+* **Improved:** Better error handling and validation
+* **New:** Unit tests for Charge and Capabilities functionality
+
+### What's Changed
+
+* Enhanced capabilities retrieval and display by @soap
+* Fixed BaseObject to support both array and object access patterns
+* Added comprehensive payment method support (PromptPay, TrueMoney, ShopeePay, etc.)
+* Improved command output with better formatting and filtering
+* Added validation methods for charge objects
+* Updated documentation with real-world examples
+
+### API Changes
+
+**Non-breaking additions:**
+- `Capabilities::getAvailablePaymentMethods()` - New method (old typo method deprecated)
+- `Capabilities::getSupportedCurrencies()` - Get all supported currencies
+- `Capabilities::getSupportedBanks()` - Get list of supported banks
+- `Capabilities::getCountry()` - Get account country
+- `Capabilities::hasPaymentMethod()` - Check specific payment method availability
+- `BaseObject::hasProperty()` - Check if property exists
+- `BaseObject::getProperty()` - Get property with default value
+- `BaseObject::validateProperties()` - Validate required properties
+- `Charge::isValid()` - Validate charge has required properties
+- `Charge::getDebugInfo()` - Get debug information about charge object
+- `Charge::retrieve()` - Alias for `find()` method
+
+**Deprecated:**
+- `Capabilities::getAavailablePaymentMethods()` - Use `getAvailablePaymentMethods()` instead (typo fix)
+
+### Bug Fixes
+
+* Fixed charge ID not found when using Omise SDK objects
+* Fixed capabilities not properly filtering payment methods
+* Fixed config typo (`sanbox_status` → `sandbox_status`)
+* Fixed PHPStan errors with ignore patterns
+
+**Full Changelog**: v1.1.32...v1.2.0
+
 ## v1.1.32 - 2025-06-05
 
 ### What's Changed

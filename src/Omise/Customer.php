@@ -80,4 +80,24 @@ class Customer extends BaseObject
     {
         return $this->object->cards($options);
     }
+
+    /**
+     * Convert to array representation
+     *
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->id ?? null,
+            'object' => $this->object ?? 'customer',
+            'livemode' => $this->livemode ?? false,
+            'location' => $this->location ?? null,
+            'email' => $this->email ?? null,
+            'description' => $this->description ?? null,
+            'default_card' => $this->default_card ?? null,
+            'metadata' => $this->metadata ?? [],
+            'created_at' => $this->created_at ?? null,
+        ];
+    }
 }
