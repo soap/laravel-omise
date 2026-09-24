@@ -33,7 +33,7 @@ class Account extends BaseObject
     /**
      * Retrieve account information
      *
-     * @return \Soap\LaravelOmise\Omise\Error|self
+     * @return Error|self
      */
     public function retrieve()
     {
@@ -53,7 +53,7 @@ class Account extends BaseObject
      * Update webhook URI for the account
      *
      * @param  string  $uri
-     * @return \Soap\LaravelOmise\Omise\Error|self
+     * @return Error|self
      */
     public function updateWebhookUri($uri)
     {

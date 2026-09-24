@@ -3,6 +3,7 @@
 namespace Soap\LaravelOmise\Commands;
 
 use Illuminate\Console\Command;
+use Soap\LaravelOmise\Omise\Error;
 
 class OmiseVerifyCommand extends Command
 {
@@ -20,7 +21,7 @@ class OmiseVerifyCommand extends Command
         $this->line('Omise keys configuration is valid!', 'info');
         $this->line('Verifying connection to Omise API...');
         $response = app('omise')->account()->retrieve();
-        if ($response instanceof \Soap\LaravelOmise\Omise\Error) {
+        if ($response instanceof Error) {
             $this->error('Omise api call failed');
             $this->error($response->getMessage());
 

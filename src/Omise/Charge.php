@@ -49,7 +49,7 @@ class Charge extends BaseObject
 
     /**
      * @param  string  $id
-     * @return \Soap\LaravelOmise\Omise\Error|self
+     * @return Error|self
      */
     public function find($id)
     {
@@ -87,7 +87,7 @@ class Charge extends BaseObject
      * For compatibility purpose
      *
      * @param  string  $id
-     * @return \Soap\LaravelOmise\Omise\Error|self
+     * @return Error|self
      */
     public function retrieve($id)
     {
@@ -98,7 +98,7 @@ class Charge extends BaseObject
      * Create charge object
      *
      * @param  mixed  $params
-     * @return \Soap\LaravelOmise\Omise\Error|self
+     * @return Error|self
      */
     public function create($params)
     {
@@ -115,7 +115,7 @@ class Charge extends BaseObject
     }
 
     /**
-     * @return \Soap\LaravelOmise\Omise\Error|self
+     * @return Error|self
      */
     public function capture(array $params)
     {
@@ -132,7 +132,7 @@ class Charge extends BaseObject
     }
 
     /**
-     * @return \Soap\LaravelOmise\Omise\Error|OmiseRefund
+     * @return Error|OmiseRefund
      *
      * @throws Exception
      */

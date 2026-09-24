@@ -3,6 +3,7 @@
 namespace Soap\LaravelOmise\Commands;
 
 use Illuminate\Console\Command;
+use Soap\LaravelOmise\Omise\Error;
 
 class OmiseBalanceCommand extends Command
 {
@@ -14,7 +15,7 @@ class OmiseBalanceCommand extends Command
     {
         $response = app('omise')->balance()->retrieve();
 
-        if ($response instanceof \Soap\LaravelOmise\Omise\Error) {
+        if ($response instanceof Error) {
             $this->error($response->getMessage());
 
             return self::FAILURE;

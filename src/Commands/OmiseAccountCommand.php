@@ -3,6 +3,7 @@
 namespace Soap\LaravelOmise\Commands;
 
 use Illuminate\Console\Command;
+use Soap\LaravelOmise\Omise\Error;
 
 class OmiseAccountCommand extends Command
 {
@@ -14,7 +15,7 @@ class OmiseAccountCommand extends Command
     {
         $response = app('omise')->account()->retrieve();
 
-        if ($response instanceof \Soap\LaravelOmise\Omise\Error) {
+        if ($response instanceof Error) {
             $this->error($response->getMessage());
 
             return self::FAILURE;

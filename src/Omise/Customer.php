@@ -20,7 +20,7 @@ class Customer extends BaseObject
 
     /**
      * @param  string  $id
-     * @return \Soap\LaravelOmise\Omise\Error|self
+     * @return Error|self
      */
     public function find($id)
     {
@@ -38,7 +38,7 @@ class Customer extends BaseObject
 
     /**
      * @param  array  $params
-     * @return \Soap\LaravelOmise\Omise\Error|self
+     * @return Error|self
      */
     public function create($params)
     {
@@ -56,7 +56,7 @@ class Customer extends BaseObject
 
     /**
      * @param  array  $params
-     * @return \Soap\LaravelOmise\Omise\Error|self
+     * @return Error|self
      */
     public function update($params)
     {

@@ -214,7 +214,7 @@ class Capabilities extends BaseObject
             $tokenMethods = $this->getTokenizationMethods() ?? [];
 
             return array_merge($methodNames, $tokenMethods);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->getTokenizationMethods() ?? [];
         }
     }
@@ -308,7 +308,7 @@ class Capabilities extends BaseObject
             $installmentBackends = $this->getInstallmentBackends();
 
             return ! empty($installmentBackends);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return false;
         }
     }

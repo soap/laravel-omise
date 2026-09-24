@@ -3,6 +3,7 @@
 namespace Soap\LaravelOmise\Commands;
 
 use Illuminate\Console\Command;
+use Soap\LaravelOmise\Omise\Error;
 
 class OmiseRefundCommand extends Command
 {
@@ -18,7 +19,7 @@ class OmiseRefundCommand extends Command
 
         $response = app('omise')->charge()->refund($chargeId, $amount);
 
-        if ($response instanceof \Soap\LaravelOmise\Omise\Error) {
+        if ($response instanceof Error) {
             $this->error('Omise api call failed');
             $this->error($response->getMessage());
 

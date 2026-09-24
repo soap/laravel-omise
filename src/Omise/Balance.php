@@ -31,7 +31,7 @@ class Balance extends BaseObject
     /**
      * Retrieve balance information
      *
-     * @return \Soap\LaravelOmise\Omise\Error|self
+     * @return Error|self
      */
     public function retrieve()
     {
