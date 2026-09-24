@@ -14,7 +14,7 @@ jobs:
       fail-fast: false
       matrix:
         php: [8.3, 8.4]
-        laravel: [10.*, 11.*, 12.*]
+        laravel: [10.*, 11.*, 12.*, 13.*]
         include:
           - laravel: 10.*
             testbench: ^8.0
@@ -34,6 +34,13 @@ jobs:
             testbench: ^10.0
             carbon: ^3.0
             pest_plugin: ^3.2
+            larastan: ^3.0
+            phpstan_phpunit: ^2.0
+
+          - laravel: 13.*
+            testbench: ^11.0
+            carbon: ^3.0
+            pest_plugin: ^4.0
             larastan: ^3.0
             phpstan_phpunit: ^2.0
 
