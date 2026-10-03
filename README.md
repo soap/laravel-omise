@@ -508,6 +508,8 @@ $payment->charge();         // the Soap\LaravelOmise\Omise\Charge
 
 Every method also accepts `description`, `metadata`, `customer`, `return_uri`, `expires_at` and `ip`. Set `OMISE_RETURN_URI` (`omise.payments.return_uri`) to give every payment a default `return_uri`.
 
+An account that requires 3-D Secure rejects a card charge without a `return_uri` (`payment_rejected`: "3d secure is requested but return_uri is not set"). Give card payments a `return_uri`, the result then `requiresRedirect()`.
+
 ### Reading the result
 
 A `PaymentResult` is not a paid charge. Check its state before fulfilling the order:

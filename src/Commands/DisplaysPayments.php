@@ -42,6 +42,10 @@ trait DisplaysPayments
 
         if ($payment->isFailed()) {
             $this->error('The charge failed: '.$payment->failureCode().' - '.$payment->failureMessage());
+
+            if (str_contains((string) $payment->failureMessage(), 'return_uri')) {
+                $this->line('Pass --return-uri=https://... or set OMISE_RETURN_URI, the account requires 3-D Secure.');
+            }
         } elseif ($payment->qrCodeUrl() !== null && $payment->isPending()) {
             $this->line('Scan the QR code: '.$payment->qrCodeUrl());
         } elseif ($payment->requiresRedirect()) {

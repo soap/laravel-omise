@@ -126,6 +126,19 @@ it('reports a declined card', function () {
         ->assertSuccessful();
 });
 
+it('tells how to pay with a card that requires 3-D Secure', function () {
+    Omise::fake(['api.omise.co/charges/' => Http::response(commandCharge([
+        'status' => 'failed',
+        'paid' => false,
+        'failure_code' => 'payment_rejected',
+        'failure_message' => '3d secure is requested but return_uri is not set',
+    ]))]);
+
+    $this->artisan('omise:pay card 20.50 --card=tokn_test_a')
+        ->expectsOutputToContain('Pass --return-uri=https://... or set OMISE_RETURN_URI')
+        ->assertSuccessful();
+});
+
 it('shows the state of a payment', function () {
     Omise::fake(['api.omise.co/charges/chrg_a' => Http::response(commandCharge())]);
 
