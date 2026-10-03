@@ -37,6 +37,9 @@ use Soap\LaravelOmise\OmiseConfig;
  * @property string $paid
  * @property string $status
  * @property array $metadata
+ * @property string|null $authorize_uri
+ * @property array|null $source
+ * @property string|null $expires_at
  *
  * @method authorizeUri()
  *
