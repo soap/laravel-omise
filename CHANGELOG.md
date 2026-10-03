@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-omise` will be documented in this file.
 
+## Add cards to customer::toArray() - 2026-10-03
+
+**Full Changelog**: https://github.com/soap/laravel-omise/compare/v1.6.0...v1.6.1
+
 ## Add payment processor and bugs fixed - 2026-10-03
 
 ### What's Changed
