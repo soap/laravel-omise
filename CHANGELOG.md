@@ -2,6 +2,30 @@
 
 All notable changes to `laravel-omise` will be documented in this file.
 
+## Add features - 2026-10-03
+
+### What's Changed
+
+**Full Changelog**: https://github.com/soap/laravel-omise/compare/v1.2.0...v1.5.0
+
+## Bugs fixed - 2026-10-03
+
+### What's Changed
+
+* Bump stefanzweifel/git-auto-commit-action from 6 to 7 by @dependabot[bot] in https://github.com/soap/laravel-omise/pull/21
+* Develop by @soap in https://github.com/soap/laravel-omise/pull/22
+* Bump actions/checkout from 4 to 5 by @dependabot[bot] in https://github.com/soap/laravel-omise/pull/23
+* Bump actions/checkout from 5 to 6 by @dependabot[bot] in https://github.com/soap/laravel-omise/pull/24
+* Bump dependabot/fetch-metadata from 2.4.0 to 2.5.0 by @dependabot[bot] in https://github.com/soap/laravel-omise/pull/25
+* Bump dependabot/fetch-metadata from 2.5.0 to 3.1.0 by @dependabot[bot] in https://github.com/soap/laravel-omise/pull/27
+* Bump actions/checkout from 6 to 7 by @dependabot[bot] in https://github.com/soap/laravel-omise/pull/28
+
+**Full Changelog**: https://github.com/soap/laravel-omise/compare/v1.2.0...v1.4.1
+
+## Add laravel http transport for better test - 2026-10-03
+
+**Full Changelog**: https://github.com/soap/laravel-omise/compare/v1.3.0...v1.4.0
+
 ## Enhanced capabilities retrieval - 2025-10-24
 
 **Full Changelog**: https://github.com/soap/laravel-omise/compare/v1.2.3...v1.2.4
