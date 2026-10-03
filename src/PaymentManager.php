@@ -2,182 +2,120 @@
 
 namespace Soap\LaravelOmise;
 
+use InvalidArgumentException;
+use OmiseRefund;
 use Soap\LaravelOmise\Contracts\PaymentProcessorFactoryInterface;
 use Soap\LaravelOmise\Contracts\PaymentProcessorInterface;
+use Soap\LaravelOmise\Exceptions\OmiseRequestException;
+use Soap\LaravelOmise\Omise\Error;
 
 class PaymentManager
 {
+    /**
+     * @var Omise
+     */
+    protected $omise;
+
+    /**
+     * @var PaymentProcessorFactoryInterface
+     */
     protected $factory;
 
-    public function __construct(PaymentProcessorFactoryInterface $factory)
+    public function __construct(Omise $omise, PaymentProcessorFactoryInterface $factory)
     {
+        $this->omise = $omise;
         $this->factory = $factory;
     }
 
     /**
-     * Create payment using specified payment method
+     * A manager with the same processors that sends requests with the given Omise
+     * instance, e.g. the one of `Omise::withKeys()`.
+     *
+     * @return static
      */
-    public function createPayment(string $paymentMethod, float $amount, string $currency = 'THB', array $paymentDetails = []): array
+    public function using(Omise $omise)
     {
-        try {
-            $processor = $this->factory->make($paymentMethod);
+        $manager = clone $this;
+        $manager->omise = $omise;
+        $manager->factory = $this->factory->using($omise);
 
-            return $processor->createPayment($amount, $currency, $paymentDetails);
-        } catch (\Exception $e) {
-            return [
-                'success' => false,
-                'error' => true,
-                'error_code' => 'payment_processor_error',
-                'error_message' => $e->getMessage(),
-                'payment_method' => $paymentMethod,
-            ];
-        }
+        return $manager;
     }
 
     /**
-     * Process payment using specified payment method
+     * Create a charge with a payment method.
+     *
+     * @param  int  $amount  in the smallest unit of the currency (satang for THB)
+     * @param  array<string, mixed>  $details
+     * @return PaymentResult|Error
+     *
+     * @throws InvalidArgumentException when the payment method is not registered
+     * @throws OmiseRequestException when `omise.throw` is enabled
      */
-    public function processPayment(string $paymentMethod, array $paymentData): array
+    public function createPayment(string $paymentMethod, int $amount, string $currency = 'THB', array $details = [])
     {
-        try {
-            $processor = $this->factory->make($paymentMethod);
-
-            return $processor->processPayment($paymentData);
-        } catch (\Exception $e) {
-            return [
-                'success' => false,
-                'error' => true,
-                'error_code' => 'payment_processor_error',
-                'error_message' => $e->getMessage(),
-                'payment_method' => $paymentMethod,
-            ];
-        }
+        return $this->processor($paymentMethod)->createPayment($amount, $currency, $details);
     }
 
     /**
-     * Refund payment
+     * The current state of a payment, e.g. on the return page or while a QR code is shown.
+     *
+     * @return PaymentResult|Error
      */
-    public function refundPayment(string $paymentMethod, string $chargeId, float $amount): bool
+    public function status(string $chargeId)
     {
-        try {
-            $processor = $this->factory->make($paymentMethod);
+        $charge = $this->omise->charge()->find($chargeId);
 
-            return $processor->refundPayment($chargeId, $amount);
-        } catch (\Exception $e) {
-            return false;
-        }
+        return $charge instanceof Error ? $charge : new PaymentResult($charge);
     }
 
     /**
-     * Get payment processor instance
+     * Refund a charge, what is left of it unless an amount is given.
+     *
+     * @param  int|null  $amount  in the smallest unit of the currency
+     * @return OmiseRefund|Error
      */
-    public function getProcessor(string $paymentMethod): PaymentProcessorInterface
+    public function refundPayment(string $chargeId, ?int $amount = null)
+    {
+        $charge = $this->omise->charge()->find($chargeId);
+
+        if ($charge instanceof Error) {
+            return $charge;
+        }
+
+        return $charge->refund([
+            'amount' => $amount ?? ($charge->amount - $charge->getRawRefundedAmount()),
+        ]);
+    }
+
+    public function processor(string $paymentMethod): PaymentProcessorInterface
     {
         return $this->factory->make($paymentMethod);
     }
 
     /**
-     * Register a custom payment processor
+     * Register a payment processor, or replace the one of a payment method.
+     *
+     * @param  class-string<PaymentProcessorInterface>  $processorClass
+     * @return $this
      */
-    public function extend(string $paymentMethod, string $processorClass): self
+    public function extend(string $paymentMethod, string $processorClass)
     {
         $this->factory->register($paymentMethod, $processorClass);
 
         return $this;
     }
 
-    /**
-     * Check if payment method is supported
-     */
     public function supports(string $paymentMethod): bool
     {
         return $this->factory->supports($paymentMethod);
     }
 
     /**
-     * Get all supported payment methods
+     * @return array<int, string>
      */
     public function getSupportedMethods(): array
     {
         return $this->factory->getSupportedMethods();
-    }
-
-    /**
-     * Check if payment method supports refunds
-     */
-    public function hasRefundSupport(string $paymentMethod): bool
-    {
-        try {
-            $processor = $this->factory->make($paymentMethod);
-
-            return $processor->hasRefundSupport();
-        } catch (\Exception $e) {
-            return false;
-        }
-    }
-
-    /**
-     * Check if payment method is offline
-     */
-    public function isOffline(string $paymentMethod): bool
-    {
-        try {
-            $processor = $this->factory->make($paymentMethod);
-
-            return $processor->isOffline();
-        } catch (\Exception $e) {
-            return false;
-        }
-    }
-
-    /**
-     * Get supported currencies for payment method
-     */
-    public function getSupportedCurrencies(string $paymentMethod): array
-    {
-        try {
-            $processor = $this->factory->make($paymentMethod);
-
-            return $processor->getSupportedCurrencies();
-        } catch (\Exception $e) {
-            return [];
-        }
-    }
-
-    /**
-     * Validate payment details for specific method
-     */
-    public function validatePaymentDetails(string $paymentMethod, array $paymentDetails): bool
-    {
-        try {
-            $processor = $this->factory->make($paymentMethod);
-
-            return $processor->validatePaymentDetails($paymentDetails);
-        } catch (\Exception $e) {
-            return false;
-        }
-    }
-
-    /**
-     * Get payment method information
-     */
-    public function getPaymentMethodInfo(string $paymentMethod): array
-    {
-        try {
-            $processor = $this->factory->make($paymentMethod);
-
-            return [
-                'method' => $paymentMethod,
-                'supports_refund' => $processor->hasRefundSupport(),
-                'is_offline' => $processor->isOffline(),
-                'supported_currencies' => $processor->getSupportedCurrencies(),
-                'processor_class' => get_class($processor),
-            ];
-        } catch (\Exception $e) {
-            return [
-                'method' => $paymentMethod,
-                'error' => $e->getMessage(),
-            ];
-        }
     }
 }

@@ -75,6 +75,11 @@ return [
     // true = failed API calls throw OmiseRequestException instead of returning an Error
     'throw' => env('OMISE_THROW', false),
 
+    // Default return_uri of the payments created with the Payment facade
+    'payments' => [
+        'return_uri' => env('OMISE_RETURN_URI'),
+    ],
+
     'http' => [
         'driver' => env('OMISE_HTTP_DRIVER', 'sdk'),   // "sdk" or "laravel"
         'timeout' => env('OMISE_HTTP_TIMEOUT', 60),
@@ -441,7 +446,122 @@ if ($refund instanceof Error) {
 }
 ```
 
+## Payments by Method
+
+The `Payment` facade creates the charge of a payment method and tells what the customer has to do next. It sits on top of the classes above: the same keys, events, `Omise::fake()` and error handling apply.
+
+```php
+use Soap\LaravelOmise\Facades\Payment;
+
+// Amounts are in the smallest unit of the currency (satang), as everywhere in the Omise API
+$payment = Payment::createPayment('promptpay', 100000, 'THB', [
+    'description' => 'Order 1001',
+    'metadata' => ['order_id' => 1001],
+]);
+
+if ($payment->isError()) {
+    return back()->withErrors($payment->getMessage());   // Soap\LaravelOmise\Omise\Error
+}
+
+$payment->chargeId();       // 'chrg_test_xxxxx'
+$payment->isPending();      // true until the customer pays
+$payment->qrCodeUrl();      // image of the QR code to scan
+$payment->expiresAt();      // Carbon instance
+$payment->charge();         // the Soap\LaravelOmise\Omise\Charge
+```
+
+| Method | Details | What happens next |
+|---|---|---|
+| `card` (alias `credit_card`) | `card` (token of Omise.js) and/or `customer`, optional `capture` | Paid at once, or `requiresRedirect()` for 3-D Secure |
+| `promptpay` | none | `qrCodeUrl()` to show, the charge stays pending until it is paid |
+| `mobile_banking` | `bank` (`scb`, `kbank`, `bay`, `bbl`, `ktb`), `return_uri` | `requiresRedirect()` to the app of the bank |
+| `installment` | `bank` (`bay`, `kbank`, `ktc`...), `term` (months), `card` when the bank needs one | As a card |
+
+Every method also accepts `description`, `metadata`, `customer`, `return_uri`, `expires_at` and `ip`. Set `OMISE_RETURN_URI` (`omise.payments.return_uri`) to give every payment a default `return_uri`.
+
+### Reading the result
+
+A `PaymentResult` is not a paid charge. Check its state before fulfilling the order:
+
+```php
+$payment = Payment::createPayment('card', 100000, 'THB', ['card' => $request->omise_token]);
+
+if ($payment->isError()) {
+    // The API call failed: $payment->getMessage(), $payment->getOmiseCode()
+} elseif ($payment->isSuccessful()) {
+    // Paid
+} elseif ($payment->requiresRedirect()) {
+    return redirect($payment->redirectUrl());      // 3-D Secure or the banking app
+} elseif ($payment->isFailed()) {
+    // Declined: $payment->failureCode() (e.g. 'insufficient_fund'), $payment->failureMessage()
+}
+```
+
+On the return page, or while a QR code is shown, look the payment up again. For payments that complete later, rely on the `charge.complete` webhook rather than on polling:
+
+```php
+$payment = Payment::status($chargeId);
+
+$payment->isSuccessful();
+```
+
+A payment that cannot be created (missing token, wrong currency...) returns an `Error` with the code `invalid_payment` without calling the API. `Payment::processor('card')->validate($amount, $currency, $details)` returns the same problems as an array.
+
+### Refunds
+
+```php
+Payment::refundPayment('chrg_test_xxxxx');          // what is left of the charge
+Payment::refundPayment('chrg_test_xxxxx', 50000);   // 500 THB
+```
+
+### Limits and availability
+
+Nothing about your account is hardcoded. The processors read it from the capabilities of the account (one API call):
+
+```php
+Payment::processor('promptpay')->isAvailable();     // is the method enabled for the account?
+Payment::processor('promptpay')->amountLimits();    // ['min' => 2000, 'max' => 15000000]
+```
+
+### Another account
+
+```php
+Omise::withKeys($publicKey, $secretKey)->payments()->createPayment('promptpay', 100000);
+```
+
+### Custom payment methods
+
+Extend `AbstractPaymentProcessor` and register it, for example in a service provider:
+
+```php
+use Soap\LaravelOmise\Services\AbstractPaymentProcessor;
+
+class TrueMoneyPaymentProcessor extends AbstractPaymentProcessor
+{
+    public function getPaymentMethod(): string
+    {
+        return 'truemoney';
+    }
+
+    protected function validateDetails(array $details): array
+    {
+        return blank($details['return_uri'] ?? null) ? ['A return_uri is required.'] : [];
+    }
+
+    protected function chargeParams(int $amount, string $currency, array $details): array
+    {
+        return array_merge(parent::chargeParams($amount, $currency, $details), [
+            'source' => ['type' => 'truemoney_jumpapp'],
+        ]);
+    }
+}
+
+Payment::extend('truemoney', TrueMoneyPaymentProcessor::class);
+```
+
 ## Payment Examples
+
+The examples below create the same charges with the resource classes directly.
 
 ### Credit Card Payment
 

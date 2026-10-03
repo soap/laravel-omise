@@ -6,20 +6,16 @@ use Illuminate\Support\Facades\Facade;
 use Soap\LaravelOmise\PaymentManager;
 
 /**
- * @method static array createPayment(string $paymentMethod, float $amount, string $currency = 'THB', array $paymentDetails = [])
- * @method static array processPayment(string $paymentMethod, array $paymentData)
- * @method static bool refundPayment(string $paymentMethod, string $chargeId, float $amount)
- * @method static \Soap\LaravelOmise\Contracts\PaymentProcessorInterface getProcessor(string $paymentMethod)
+ * @method static \Soap\LaravelOmise\PaymentResult|\Soap\LaravelOmise\Omise\Error createPayment(string $paymentMethod, int $amount, string $currency = 'THB', array $details = [])
+ * @method static \Soap\LaravelOmise\PaymentResult|\Soap\LaravelOmise\Omise\Error status(string $chargeId)
+ * @method static \OmiseRefund|\Soap\LaravelOmise\Omise\Error refundPayment(string $chargeId, ?int $amount = null)
+ * @method static \Soap\LaravelOmise\Contracts\PaymentProcessorInterface processor(string $paymentMethod)
  * @method static \Soap\LaravelOmise\PaymentManager extend(string $paymentMethod, string $processorClass)
+ * @method static \Soap\LaravelOmise\PaymentManager using(\Soap\LaravelOmise\Omise $omise)
  * @method static bool supports(string $paymentMethod)
  * @method static array getSupportedMethods()
- * @method static bool hasRefundSupport(string $paymentMethod)
- * @method static bool isOffline(string $paymentMethod)
- * @method static array getSupportedCurrencies(string $paymentMethod)
- * @method static bool validatePaymentDetails(string $paymentMethod, array $paymentDetails)
- * @method static array getPaymentMethodInfo(string $paymentMethod)
  *
- * @see \Soap\LaravelOmise\PaymentManager
+ * @see PaymentManager
  */
 class Payment extends Facade
 {

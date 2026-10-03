@@ -7,6 +7,8 @@ use Soap\LaravelOmise\Commands\OmiseBalanceCommand;
 use Soap\LaravelOmise\Commands\OmiseCapabilitiesCommand;
 use Soap\LaravelOmise\Commands\OmiseRefundCommand;
 use Soap\LaravelOmise\Commands\OmiseVerifyCommand;
+use Soap\LaravelOmise\Contracts\PaymentProcessorFactoryInterface;
+use Soap\LaravelOmise\Factories\PaymentProcessorFactory;
 use Soap\LaravelOmise\Http\Transport;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -39,6 +41,14 @@ class LaravelOmiseServiceProvider extends PackageServiceProvider
         });
 
         $this->app->alias(Omise::class, 'omise');
+
+        $this->app->singleton(PaymentProcessorFactoryInterface::class, function ($app) {
+            return new PaymentProcessorFactory($app->make(Omise::class));
+        });
+
+        $this->app->singleton(PaymentManager::class, function ($app) {
+            return new PaymentManager($app->make(Omise::class), $app->make(PaymentProcessorFactoryInterface::class));
+        });
     }
 
     public function packageBooted()

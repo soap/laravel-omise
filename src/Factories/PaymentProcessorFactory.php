@@ -5,93 +5,74 @@ namespace Soap\LaravelOmise\Factories;
 use InvalidArgumentException;
 use Soap\LaravelOmise\Contracts\PaymentProcessorFactoryInterface;
 use Soap\LaravelOmise\Contracts\PaymentProcessorInterface;
-use Soap\LaravelOmise\OmiseConfig;
+use Soap\LaravelOmise\Omise;
 use Soap\LaravelOmise\Services\CreditCardPaymentProcessor;
+use Soap\LaravelOmise\Services\InstallmentPaymentProcessor;
+use Soap\LaravelOmise\Services\MobileBankingPaymentProcessor;
 use Soap\LaravelOmise\Services\PromptPayPaymentProcessor;
 
 class PaymentProcessorFactory implements PaymentProcessorFactoryInterface
 {
-    protected $omiseConfig;
-
-    protected $processors = [];
-
-    public function __construct(OmiseConfig $omiseConfig)
-    {
-        $this->omiseConfig = $omiseConfig;
-        $this->registerDefaultProcessors();
-    }
+    /**
+     * @var Omise
+     */
+    protected $omise;
 
     /**
-     * Register default payment processors
+     * @var array<string, class-string<PaymentProcessorInterface>>
      */
-    protected function registerDefaultProcessors(): void
+    protected $processors = [
+        'card' => CreditCardPaymentProcessor::class,
+        'credit_card' => CreditCardPaymentProcessor::class,
+        'promptpay' => PromptPayPaymentProcessor::class,
+        'mobile_banking' => MobileBankingPaymentProcessor::class,
+        'installment' => InstallmentPaymentProcessor::class,
+    ];
+
+    public function __construct(Omise $omise)
     {
-        $this->processors = [
-            'credit_card' => CreditCardPaymentProcessor::class,
-            'card' => CreditCardPaymentProcessor::class, // Alias
-            'promptpay' => PromptPayPaymentProcessor::class,
-        ];
+        $this->omise = $omise;
     }
 
-    /**
-     * Make payment processor instance
-     *
-     * @throws InvalidArgumentException
-     */
     public function make(string $paymentMethod): PaymentProcessorInterface
     {
-        $paymentMethod = strtolower($paymentMethod);
+        $processorClass = $this->processors[strtolower($paymentMethod)] ?? null;
 
-        if (! isset($this->processors[$paymentMethod])) {
-            throw new InvalidArgumentException("Payment processor for '{$paymentMethod}' is not supported.");
+        if ($processorClass === null) {
+            throw new InvalidArgumentException("Payment method [{$paymentMethod}] is not supported.");
         }
 
-        $processorClass = $this->processors[$paymentMethod];
-
-        if (! class_exists($processorClass)) {
-            throw new InvalidArgumentException("Payment processor class '{$processorClass}' does not exist.");
-        }
-
-        $processor = new $processorClass($this->omiseConfig);
+        $processor = new $processorClass($this->omise);
 
         if (! $processor instanceof PaymentProcessorInterface) {
-            throw new InvalidArgumentException('Payment processor must implement PaymentProcessorInterface.');
+            throw new InvalidArgumentException("Payment processor [{$processorClass}] must implement PaymentProcessorInterface.");
         }
 
         return $processor;
     }
 
-    /**
-     * Register a custom payment processor
-     */
-    public function register(string $paymentMethod, string $processorClass): self
+    public function register(string $paymentMethod, string $processorClass)
     {
         $this->processors[strtolower($paymentMethod)] = $processorClass;
 
         return $this;
     }
 
-    /**
-     * Check if payment method is supported
-     */
     public function supports(string $paymentMethod): bool
     {
         return isset($this->processors[strtolower($paymentMethod)]);
     }
 
-    /**
-     * Get all supported payment methods
-     */
     public function getSupportedMethods(): array
     {
         return array_keys($this->processors);
     }
 
-    /**
-     * Get all registered processors
-     */
-    public function getProcessors(): array
+    public function using(Omise $omise)
     {
-        return $this->processors;
+        $factory = clone $this;
+        $factory->omise = $omise;
+
+        return $factory;
     }
 }

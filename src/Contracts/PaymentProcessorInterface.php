@@ -2,57 +2,47 @@
 
 namespace Soap\LaravelOmise\Contracts;
 
+use Soap\LaravelOmise\Exceptions\OmiseRequestException;
+use Soap\LaravelOmise\Omise\Error;
+use Soap\LaravelOmise\PaymentResult;
+
 interface PaymentProcessorInterface
 {
     /**
-     * Create payment with the given parameters
-     *
-     * @param  float  $amount  Payment amount
-     * @param  string  $currency  Currency code (default: THB)
-     * @param  array  $paymentDetails  Payment specific details
-     * @return array Payment creation result
-     */
-    public function createPayment(float $amount, string $currency = 'THB', array $paymentDetails = []): array;
-
-    /**
-     * Process payment with the given data
-     *
-     * @param  array  $paymentData  Payment data
-     * @return array Payment processing result
-     */
-    public function processPayment(array $paymentData): array;
-
-    /**
-     * Refund payment by charge ID
-     *
-     * @param  string  $chargeId  Charge ID to refund
-     * @param  float  $amount  Amount to refund
-     * @return bool Refund success status
-     */
-    public function refundPayment(string $chargeId, float $amount): bool;
-
-    /**
-     * Check if this payment method supports refunds
-     */
-    public function hasRefundSupport(): bool;
-
-    /**
-     * Check if this is an offline payment method
-     */
-    public function isOffline(): bool;
-
-    /**
-     * Get the payment method identifier
+     * The name the processor is registered with, e.g. `card` or `promptpay`.
      */
     public function getPaymentMethod(): string;
 
     /**
-     * Get supported currencies for this payment method
+     * Create a charge for the payment method.
+     *
+     * @param  int  $amount  in the smallest unit of the currency (satang for THB), as the Omise API expects
+     * @param  array<string, mixed>  $details  description, metadata, customer, return_uri and what the payment method needs
+     * @return PaymentResult|Error
+     *
+     * @throws OmiseRequestException when `omise.throw` is enabled
      */
-    public function getSupportedCurrencies(): array;
+    public function createPayment(int $amount, string $currency = 'THB', array $details = []);
 
     /**
-     * Validate payment details before processing
+     * What prevents the payment from being created, without calling the API.
+     *
+     * @param  array<string, mixed>  $details
+     * @return array<int, string> empty when nothing is wrong
      */
-    public function validatePaymentDetails(array $paymentDetails): bool;
+    public function validate(int $amount, string $currency, array $details = []): array;
+
+    /**
+     * Whether the customer completes the payment outside the application (QR code, banking app).
+     */
+    public function isOffline(): bool;
+
+    public function hasRefundSupport(): bool;
+
+    /**
+     * The currencies the payment method is limited to, empty when Omise decides.
+     *
+     * @return array<int, string>
+     */
+    public function getSupportedCurrencies(): array;
 }

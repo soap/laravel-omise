@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static string getPublicKey()
  * @method static string getSecretKey()
  * @method static \Soap\LaravelOmise\Omise fake(array|callable|null $responses = null)
+ * @method static \Soap\LaravelOmise\PaymentManager payments()
  * @method static \Soap\LaravelOmise\Omise\Account account()
  * @method static \Soap\LaravelOmise\Omise\Capabilities capabilities()
  * @method static \Soap\LaravelOmise\Omise\Charge charge()

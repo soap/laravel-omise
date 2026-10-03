@@ -80,6 +80,16 @@ class Omise
         return $this;
     }
 
+    /**
+     * Payments by payment method (card, promptpay...) with the keys of this instance, see PaymentManager.
+     *
+     * @return PaymentManager
+     */
+    public function payments()
+    {
+        return app(PaymentManager::class)->using($this);
+    }
+
     public function account()
     {
         return new Account($this->config);

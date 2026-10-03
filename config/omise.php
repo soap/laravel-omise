@@ -26,6 +26,16 @@ return [
     'throw' => env('OMISE_THROW', false),
 
     /*
+     * Payments created by payment method, see `Soap\LaravelOmise\Facades\Payment`.
+     *
+     * return_uri: where Omise sends the customer back after a redirect (3-D Secure,
+     *             mobile banking), unless the payment gives its own.
+     */
+    'payments' => [
+        'return_uri' => env('OMISE_RETURN_URI'),
+    ],
+
+    /*
      * How requests are sent to the Omise API.
      *
      * driver: "sdk" uses the curl client of omise/omise-php (30s connect / 60s timeout).

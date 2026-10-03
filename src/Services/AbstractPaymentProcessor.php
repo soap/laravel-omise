@@ -2,256 +2,155 @@
 
 namespace Soap\LaravelOmise\Services;
 
+use Soap\LaravelOmise\Concerns\ReportsFailures;
 use Soap\LaravelOmise\Contracts\PaymentProcessorInterface;
-use Soap\LaravelOmise\Omise\Charge;
+use Soap\LaravelOmise\Omise;
 use Soap\LaravelOmise\Omise\Error;
-use Soap\LaravelOmise\Omise\Source;
-use Soap\LaravelOmise\OmiseConfig;
+use Soap\LaravelOmise\PaymentResult;
 
 abstract class AbstractPaymentProcessor implements PaymentProcessorInterface
 {
-    protected $omiseConfig;
-
-    protected $charge;
-
-    protected $source;
-
-    public function __construct(OmiseConfig $omiseConfig)
-    {
-        $this->omiseConfig = $omiseConfig;
-        $this->charge = new Charge($omiseConfig);
-        $this->source = new Source($omiseConfig);
-    }
+    use ReportsFailures;
 
     /**
-     * Create payment with the given parameters
+     * Details that are sent as they are with every charge.
      *
-     * @param  float  $amount  Payment amount
-     * @param  string  $currency  Currency code (default: THB)
-     * @param  array  $paymentDetails  Payment specific details
-     * @return array Payment creation result
+     * @var array<int, string>
      */
-    public function createPayment(float $amount, string $currency = 'THB', array $paymentDetails = []): array
-    {
-        try {
-            // Validate inputs
-            if (! $this->validateAmount($amount)) {
-                return $this->errorResponse('invalid_amount', 'Invalid payment amount');
-            }
-
-            if (! $this->validateCurrency($currency)) {
-                return $this->errorResponse('invalid_currency', 'Unsupported currency');
-            }
-
-            if (! $this->validatePaymentDetails($paymentDetails)) {
-                return $this->errorResponse('invalid_details', 'Invalid payment details');
-            }
-
-            // Prepare charge parameters
-            $chargeParams = $this->prepareChargeParams($amount, $currency, $paymentDetails);
-
-            // Create source if needed
-            if ($this->needsSource()) {
-                $sourceResult = $this->createPaymentSource($amount, $currency, $paymentDetails);
-                if (isset($sourceResult['error'])) {
-                    return $sourceResult;
-                }
-                $chargeParams['source'] = $sourceResult['source_id'];
-            }
-
-            // Create charge
-            $charge = $this->charge->create($chargeParams);
-
-            if ($charge instanceof Error) {
-                return $this->errorResponse($charge->getCode(), $charge->getMessage());
-            }
-
-            return $this->successResponse($charge);
-
-        } catch (\Exception $e) {
-            return $this->errorResponse('processing_error', $e->getMessage());
-        }
-    }
+    protected $chargeDetails = ['description', 'metadata', 'customer', 'return_uri', 'expires_at', 'ip'];
 
     /**
-     * Process payment with the given data
-     *
-     * @param  array  $paymentData  Payment data
-     * @return array Payment processing result
+     * @var Omise
      */
-    public function processPayment(array $paymentData): array
-    {
-        $amount = $paymentData['amount'] ?? 0;
-        $currency = $paymentData['currency'] ?? 'THB';
-        $paymentDetails = $paymentData['details'] ?? [];
+    protected $omise;
 
-        return $this->createPayment($amount, $currency, $paymentDetails);
+    public function __construct(Omise $omise)
+    {
+        $this->omise = $omise;
     }
 
-    /**
-     * Refund payment by charge ID
-     *
-     * @param  string  $chargeId  Charge ID to refund
-     * @param  float  $amount  Amount to refund
-     * @return bool Refund success status
-     */
-    public function refundPayment(string $chargeId, float $amount): bool
+    public function createPayment(int $amount, string $currency = 'THB', array $details = [])
     {
-        if (! $this->hasRefundSupport()) {
-            return false;
+        $details = $this->withDefaults($details);
+        $problems = $this->validate($amount, $currency, $details);
+
+        if ($problems !== []) {
+            return $this->fail([
+                'code' => 'invalid_payment',
+                'message' => implode(' ', $problems),
+            ]);
         }
 
-        try {
-            $charge = $this->charge->find($chargeId);
+        $charge = $this->omise->charge()->create($this->chargeParams($amount, $currency, $details));
 
-            if ($charge instanceof Error) {
-                return false;
-            }
+        return $charge instanceof Error ? $charge : new PaymentResult($charge);
+    }
 
-            $refundData = [
-                'amount' => $this->convertToSubunit($amount, $charge->currency),
-            ];
+    public function validate(int $amount, string $currency, array $details = []): array
+    {
+        $problems = [];
+        $currencies = $this->getSupportedCurrencies();
 
-            $refund = $charge->refund($refundData);
-
-            return ! ($refund instanceof Error);
-
-        } catch (\Exception $e) {
-            return false;
+        if ($amount <= 0) {
+            $problems[] = 'The amount must be greater than zero.';
         }
+
+        if ($currencies !== [] && ! in_array(strtoupper($currency), $currencies, true)) {
+            $problems[] = sprintf('The currency must be %s.', implode(' or ', $currencies));
+        }
+
+        return array_merge($problems, $this->validateDetails($this->withDefaults($details)));
     }
 
-    /**
-     * Get supported currencies for this payment method
-     */
-    public function getSupportedCurrencies(): array
-    {
-        return ['THB', 'USD', 'EUR', 'GBP', 'SGD', 'JPY'];
-    }
-
-    /**
-     * Check if this payment method supports refunds
-     */
-    public function hasRefundSupport(): bool
-    {
-        return true;
-    }
-
-    /**
-     * Check if this is an offline payment method
-     */
     public function isOffline(): bool
     {
         return false;
     }
 
-    /**
-     * Check if this payment method needs a source
-     */
-    protected function needsSource(): bool
+    public function hasRefundSupport(): bool
     {
-        return false;
+        return true;
     }
 
-    /**
-     * Prepare charge parameters specific to payment method
-     */
-    abstract protected function prepareChargeParams(float $amount, string $currency, array $paymentDetails): array;
-
-    /**
-     * Get the payment method identifier
-     */
-    abstract public function getPaymentMethod(): string;
-
-    /**
-     * Create payment source if needed
-     */
-    protected function createPaymentSource(float $amount, string $currency, array $paymentDetails): array
-    {
-        if (! $this->needsSource()) {
-            return $this->errorResponse('source_not_needed', 'This payment method does not need a source');
-        }
-
-        $sourceParams = $this->prepareSourceParams($amount, $currency, $paymentDetails);
-        $source = $this->source->create($sourceParams);
-
-        if ($source instanceof Error) {
-            return $this->errorResponse($source->getCode(), $source->getMessage());
-        }
-
-        return ['source_id' => $source->id];
-    }
-
-    /**
-     * Prepare source parameters
-     */
-    protected function prepareSourceParams(float $amount, string $currency, array $paymentDetails): array
+    public function getSupportedCurrencies(): array
     {
         return [];
     }
 
     /**
-     * Validate amount
+     * Whether the Omise account can accept the payment method, from its capabilities (one API call).
      */
-    protected function validateAmount(float $amount): bool
+    public function isAvailable(): bool
     {
-        return $amount > 0;
+        return $this->capability() !== null;
     }
 
     /**
-     * Validate currency
-     */
-    protected function validateCurrency(string $currency): bool
-    {
-        return in_array(strtoupper($currency), $this->getSupportedCurrencies());
-    }
-
-    /**
-     * Convert amount to subunit
-     */
-    protected function convertToSubunit(float $amount, string $currency): int
-    {
-        return \Soap\LaravelOmise\Omise\Helpers\OmiseMoney::toSubunit($amount, $currency);
-    }
-
-    /**
-     * Convert amount from subunit
-     */
-    protected function convertFromSubunit(int $amount, string $currency): float
-    {
-        return \Soap\LaravelOmise\Omise\Helpers\OmiseMoney::toCurrencyUnit($amount, $currency);
-    }
-
-    /**
-     * Create success response
+     * The amount Omise accepts for a charge of the account, in the smallest unit of the
+     * currency, from its capabilities (one API call). Null when Omise does not tell.
      *
-     * @param  mixed  $charge
+     * @return array{min: int|null, max: int|null}|null
      */
-    protected function successResponse($charge): array
+    public function amountLimits(): ?array
     {
-        return [
-            'success' => true,
-            'charge_id' => $charge->id,
-            'status' => $charge->status,
-            'amount' => $charge->getAmount(),
-            'currency' => $charge->currency,
-            'payment_method' => $this->getPaymentMethod(),
-            'authorize_uri' => method_exists($charge->object, 'authorizeUri') ? $charge->object->authorizeUri() : null,
-            'charge' => $charge,
-        ];
+        $limits = $this->omise->capabilities()->retrieve()->limits['charge_amount'] ?? null;
+
+        return is_array($limits) ? ['min' => $limits['min'] ?? null, 'max' => $limits['max'] ?? null] : null;
     }
 
     /**
-     * Create error response
+     * The payment method as the capabilities of the account describe it.
+     *
+     * @return array<string, mixed>|null
      */
-    protected function errorResponse(string $code, string $message): array
+    protected function capability(): ?array
     {
-        return [
-            'success' => false,
-            'error' => true,
-            'error_code' => $code,
-            'error_message' => $message,
-            'payment_method' => $this->getPaymentMethod(),
-        ];
+        return $this->omise->capabilities()->getBackendByType($this->capabilityName());
+    }
+
+    /**
+     * The name, or the start of the names, of the payment method in the capabilities.
+     */
+    protected function capabilityName(): string
+    {
+        return $this->getPaymentMethod();
+    }
+
+    /**
+     * What is wrong with the details of the payment method.
+     *
+     * @param  array<string, mixed>  $details
+     * @return array<int, string>
+     */
+    protected function validateDetails(array $details): array
+    {
+        return [];
+    }
+
+    /**
+     * @param  array<string, mixed>  $details
+     * @return array<string, mixed>
+     */
+    protected function withDefaults(array $details): array
+    {
+        if (! isset($details['return_uri']) && filled(config('omise.payments.return_uri'))) {
+            $details['return_uri'] = config('omise.payments.return_uri');
+        }
+
+        return $details;
+    }
+
+    /**
+     * The parameters of the charge.
+     *
+     * @param  array<string, mixed>  $details
+     * @return array<string, mixed>
+     */
+    protected function chargeParams(int $amount, string $currency, array $details): array
+    {
+        return array_merge(
+            ['amount' => $amount, 'currency' => strtolower($currency)],
+            array_intersect_key($details, array_flip($this->chargeDetails))
+        );
     }
 }
