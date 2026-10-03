@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-omise` will be documented in this file.
 
+## Add features - 2026-10-03
+
+### What's Changed
+
+**Full Changelog**: https://github.com/soap/laravel-omise/compare/v1.2.0...v1.5.0
+
 ## Bugs fixed - 2026-10-03
 
 ### What's Changed
