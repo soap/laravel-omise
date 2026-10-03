@@ -7,6 +7,7 @@ use Soap\LaravelOmise\Commands\OmiseBalanceCommand;
 use Soap\LaravelOmise\Commands\OmiseCapabilitiesCommand;
 use Soap\LaravelOmise\Commands\OmiseRefundCommand;
 use Soap\LaravelOmise\Commands\OmiseVerifyCommand;
+use Soap\LaravelOmise\Http\Transport;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -37,5 +38,15 @@ class LaravelOmiseServiceProvider extends PackageServiceProvider
             return new Omise($app->make(OmiseConfig::class));
         });
 
+    }
+
+    public function packageBooted()
+    {
+        // The curl executor of the SDK reads the API version from this constant.
+        if (! defined('OMISE_API_VERSION') && filled(config('omise.api_version'))) {
+            define('OMISE_API_VERSION', (string) config('omise.api_version'));
+        }
+
+        Transport::useDriver(config('omise.http.driver'));
     }
 }

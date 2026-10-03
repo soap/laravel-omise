@@ -38,6 +38,7 @@ class Source extends BaseObject
             return new Error([
                 'code' => 'bad_request',
                 'message' => $e->getMessage(),
+                'exception' => $e,
             ]);
         }
 
@@ -52,6 +53,7 @@ class Source extends BaseObject
             return new Error([
                 'code' => 'not_found',
                 'message' => $e->getMessage(),
+                'exception' => $e,
             ]);
         }
 

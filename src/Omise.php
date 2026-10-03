@@ -2,6 +2,8 @@
 
 namespace Soap\LaravelOmise;
 
+use Illuminate\Support\Facades\Http;
+use Soap\LaravelOmise\Http\Transport;
 use Soap\LaravelOmise\Omise\Account;
 use Soap\LaravelOmise\Omise\Balance;
 use Soap\LaravelOmise\Omise\Capabilities;
@@ -36,6 +38,22 @@ class Omise
     public function getSecretKey()
     {
         return $this->config->getSecretKey();
+    }
+
+    /**
+     * Fake the Omise API in tests: requests go through the Laravel HTTP client and
+     * are answered by the given `Http::fake()` responses, assert them with `Http::assertSent()`.
+     *
+     * @param  array<string, mixed>|callable|null  $responses
+     * @return $this
+     */
+    public function fake($responses = null)
+    {
+        Transport::useDriver(Transport::DRIVER_LARAVEL);
+
+        Http::fake($responses);
+
+        return $this;
     }
 
     public function account()

@@ -26,6 +26,7 @@ class Refund extends BaseObject
             return new Error([
                 'code' => 'not_found',
                 'message' => $e->getMessage(),
+                'exception' => $e,
             ]);
         }
 
@@ -40,6 +41,7 @@ class Refund extends BaseObject
             return new Error([
                 'code' => 'not_found',
                 'message' => $e->getMessage(),
+                'exception' => $e,
             ]);
         }
 

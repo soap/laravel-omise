@@ -90,7 +90,7 @@
                 "Soap\\LaravelOmise\\LaravelOmiseServiceProvider"
             ],
             "aliases": {
-                "LaravelOmise": "Soap\\LaravelOmise\\Facades\\LaravelOmise"
+                "Omise": "Soap\\LaravelOmise\\Facades\\Omise"
             }
         }
     },

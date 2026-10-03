@@ -41,6 +41,7 @@ class Balance extends BaseObject
             return new Error([
                 'code' => 'not_found',
                 'message' => $e->getMessage(),
+                'exception' => $e,
             ]);
         }
 

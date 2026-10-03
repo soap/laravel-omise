@@ -2,7 +2,9 @@
 
 namespace Soap\LaravelOmise\Omise;
 
+use ArrayAccess;
 use Illuminate\Support\Str;
+use Soap\LaravelOmise\Exceptions\OmiseRequestException;
 
 #[\AllowDynamicProperties]
 class BaseObject
@@ -20,11 +22,49 @@ class BaseObject
         }
 
         if ($object != null) {
-            $this->object = $object;
+            // The SDK reuses one instance per resource class, keep our own copy of it.
+            $this->object = is_object($object) ? clone $object : $object;
         } elseif (method_exists($this->object, 'refresh')) {
             $this->object->refresh();
         }
 
+        return $this;
+    }
+
+    /**
+     * Merge the attributes of an API response into the loaded object.
+     *
+     * @param  array<string, mixed>  $values
+     * @return $this
+     */
+    protected function fill(array $values)
+    {
+        if (is_object($this->object) && method_exists($this->object, 'refresh')) {
+            $this->object->refresh($values);
+        } else {
+            $this->object = array_merge(is_array($this->object) ? $this->object : [], $values);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Whether the API call failed, see Error.
+     */
+    public function isError(): bool
+    {
+        return false;
+    }
+
+    /**
+     * Throw an exception if the API call failed, otherwise return the object.
+     *
+     * @return $this
+     *
+     * @throws OmiseRequestException
+     */
+    public function throw()
+    {
         return $this;
     }
 
@@ -45,8 +85,8 @@ class BaseObject
             return false;
         }
 
-        // Check if it's an array
-        if (is_array($this->object)) {
+        // Check if it's an array, or an SDK object (they are accessed as arrays)
+        if (is_array($this->object) || $this->object instanceof ArrayAccess) {
             return isset($this->object[$key]);
         }
 
@@ -67,8 +107,8 @@ class BaseObject
             return $default;
         }
 
-        // Handle array access
-        if (is_array($this->object)) {
+        // Handle array access (arrays and SDK objects)
+        if (is_array($this->object) || $this->object instanceof ArrayAccess) {
             return $this->object[$key] ?? $default;
         }
 

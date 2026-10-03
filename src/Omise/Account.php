@@ -3,6 +3,7 @@
 namespace Soap\LaravelOmise\Omise;
 
 use OmiseAccount;
+use Soap\LaravelOmise\Http\Transport;
 use Soap\LaravelOmise\OmiseConfig;
 
 /**
@@ -43,6 +44,7 @@ class Account extends BaseObject
             return new Error([
                 'code' => 'not_found',
                 'message' => $e->getMessage(),
+                'exception' => $e,
             ]);
         }
 
@@ -58,15 +60,14 @@ class Account extends BaseObject
     public function updateWebhookUri($uri)
     {
         try {
-            $omiseAccount = OmiseAccount::retrieve($this->omiseConfig->getPublicKey(), $this->omiseConfig->getSecretKey());
-            $omiseAccount->update([
+            $this->fill(Transport::request('PATCH', 'account', $this->omiseConfig->getSecretKey(), [
                 'webhook_uri' => $uri,
-            ]);
-            $this->refresh($omiseAccount);
+            ]));
         } catch (\Exception $e) {
             return new Error([
                 'code' => 'bad_request',
                 'message' => $e->getMessage(),
+                'exception' => $e,
             ]);
         }
 

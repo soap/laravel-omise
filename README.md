@@ -67,11 +67,20 @@ return [
     'test_public_key' => env('OMISE_TEST_PUBLIC_KEY', ''),
     'test_secret_key' => env('OMISE_TEST_SECRET_KEY', ''),
 
+    // Sent as the Omise-Version header, null = the API version of your account
     'api_version' => env('OMISE_API_VERSION', '2019-05-29'),
 
     'sandbox_status' => env('OMISE_SANDBOX_STATUS', true),
+
+    'http' => [
+        'driver' => env('OMISE_HTTP_DRIVER', 'sdk'),   // "sdk" or "laravel"
+        'timeout' => env('OMISE_HTTP_TIMEOUT', 60),
+        'connect_timeout' => env('OMISE_HTTP_CONNECT_TIMEOUT', 30),
+    ],
 ];
 ```
+
+If you published the configuration file before v1.4, add the `http` section to use the Laravel HTTP driver (see [HTTP Driver](#http-driver)).
 
 ## Quick Start
 
@@ -333,6 +342,14 @@ if ($charge->isValid()) {
 
 // Debug information
 $debug = $charge->getDebugInfo();
+
+// Capture an authorized charge, or reverse it
+$charge->capture();
+$charge->reverse();
+
+// Expire a pending charge (e.g. a PromptPay QR that is replaced by another payment method)
+$charge->expire();
+app('omise')->charge()->expire('chrg_test_xxxxx');   // by id, without loading it first
 ```
 
 ### Sources
@@ -383,8 +400,16 @@ $result = $customer->update([
     'description' => 'Updated Name'
 ]);
 
+// Update customer by id, without loading it first (one request)
+$customer = app('omise')->customer()->update(['card' => $omiseToken], 'cust_test_xxxxx');
+
 // Get customer cards
 $cards = $customer->cards();
+$cards = $customer->cards(['limit' => 5, 'order' => 'reverse_chronological']);
+
+// Delete a card
+$customer->deleteCard('card_test_xxxxx');
+app('omise')->customer()->deleteCard('card_test_xxxxx', 'cust_test_xxxxx');
 ```
 
 ### Refunds
@@ -580,6 +605,22 @@ if ($charge instanceof Error) {
 // Success - proceed with charge
 ```
 
+Prefer exceptions? Chain `throw()`: it returns the object on success and throws `Soap\LaravelOmise\Exceptions\OmiseRequestException` on failure. The exception of the Omise SDK (e.g. `OmiseInvalidCardException`) is its `getPrevious()`.
+
+```php
+use Soap\LaravelOmise\Exceptions\OmiseRequestException;
+
+try {
+    $charge = app('omise')->charge()->create([...])->throw();
+} catch (OmiseRequestException $e) {
+    $e->getMessage();     // Message from Omise
+    $e->getErrorCode();   // Same as Error::getCode()
+    $e->getPrevious();    // OmiseException of the SDK, or a connection exception
+}
+```
+
+`isError()` is available on every result as an alternative to `instanceof Error`.
+
 ## Supported Payment Methods
 
 This package supports all Omise payment methods:
@@ -701,9 +742,17 @@ $satang = $charge->getRawAmount(); // Original minor units
 
 ## Advanced Usage
 
-### Custom HTTP Configuration
+### HTTP Driver
 
-The package supports custom HTTP configurations for special network requirements. See the configuration file for HTTP timeout and SSL options.
+By default requests are sent by the curl client of `omise/omise-php` (30s connect timeout, 60s timeout). Set `OMISE_HTTP_DRIVER=laravel` to send them with the Laravel HTTP client instead:
+
+```env
+OMISE_HTTP_DRIVER=laravel
+OMISE_HTTP_TIMEOUT=30
+OMISE_HTTP_CONNECT_TIMEOUT=5
+```
+
+The `laravel` driver honours `omise.url` and the timeouts above, shows up in tools that observe the HTTP client (Telescope, Pulse, `Http::globalMiddleware()`), and can be faked in tests. It requires `omise/omise-php` ^3.0.
 
 ### Multi-Environment Setup
 
@@ -735,6 +784,39 @@ if ($charge->isValid()) {
 $debug = $charge->getDebugInfo();
 // Returns: object_loaded, object_type, has_id, has_status, etc.
 ```
+
+## Testing Your Application
+
+`Omise::fake()` switches to the Laravel HTTP driver and registers `Http::fake()` responses, so no request reaches Omise and you can assert what was sent:
+
+```php
+use Illuminate\Http\Client\Request;
+use Illuminate\Support\Facades\Http;
+use Soap\LaravelOmise\Facades\Omise;
+
+it('charges the card', function () {
+    Http::preventStrayRequests();
+
+    Omise::fake([
+        'api.omise.co/charges/' => Http::response([
+            'object' => 'charge',
+            'id' => 'chrg_test_1',
+            'amount' => 100000,
+            'currency' => 'thb',
+            'status' => 'successful',
+            'paid' => true,
+        ]),
+    ]);
+
+    $this->post('/checkout', ['token' => 'tokn_test_1'])->assertRedirect();
+
+    Http::assertSent(fn (Request $request) => $request->method() === 'POST'
+        && $request['amount'] === '100000'      // form encoded, values are strings
+        && $request['card'] === 'tokn_test_1');
+});
+```
+
+Responses must be Omise objects (they need an `object` key). Return `['object' => 'error', 'code' => 'invalid_card', 'message' => '...']` to simulate a failure.
 
 ## Testing
 

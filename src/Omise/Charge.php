@@ -5,6 +5,7 @@ namespace Soap\LaravelOmise\Omise;
 use Exception;
 use OmiseCharge;
 use OmiseRefund;
+use Soap\LaravelOmise\Http\Transport;
 use Soap\LaravelOmise\Omise\Helpers\OmiseMoney;
 use Soap\LaravelOmise\OmiseConfig;
 
@@ -77,6 +78,7 @@ class Charge extends BaseObject
             return new Error([
                 'code' => 'api_error',
                 'message' => $e->getMessage(),
+                'exception' => $e,
             ]);
         }
 
@@ -108,6 +110,7 @@ class Charge extends BaseObject
             return new Error([
                 'code' => 'bad_request',
                 'message' => $e->getMessage(),
+                'exception' => $e,
             ]);
         }
 
@@ -117,14 +120,15 @@ class Charge extends BaseObject
     /**
      * @return Error|self
      */
-    public function capture(array $params)
+    public function capture(array $params = [])
     {
         try {
-            $this->refresh($this->object->capture($params));
+            $this->fill($this->request('capture', null, $params));
         } catch (Exception $e) {
             return new Error([
                 'code' => 'failed_capture',
                 'message' => $e->getMessage(),
+                'exception' => $e,
             ]);
         }
 
@@ -139,15 +143,82 @@ class Charge extends BaseObject
     public function refund(array $refundData)
     {
         try {
-            $refund = $this->object->refund($refundData);
+            $refund = new OmiseRefund(
+                $this->request('refunds', null, $refundData),
+                $this->omiseConfig->getPublicKey(),
+                $this->omiseConfig->getSecretKey()
+            );
         } catch (Exception $e) {
             return new Error([
                 'code' => 'failed_refund',
                 'message' => $e->getMessage(),
+                'exception' => $e,
             ]);
         }
 
         return $refund;
+    }
+
+    /**
+     * Expire a pending charge, the loaded one unless an id is given.
+     *
+     * @param  string|null  $id
+     * @return Error|self
+     */
+    public function expire($id = null)
+    {
+        try {
+            $this->fill($this->request('expire', $id));
+        } catch (Exception $e) {
+            return new Error([
+                'code' => 'failed_expire',
+                'message' => $e->getMessage(),
+                'exception' => $e,
+            ]);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Reverse an authorized charge that is not captured yet, the loaded one unless an id is given.
+     *
+     * @param  string|null  $id
+     * @return Error|self
+     */
+    public function reverse($id = null)
+    {
+        try {
+            $this->fill($this->request('reverse', $id));
+        } catch (Exception $e) {
+            return new Error([
+                'code' => 'failed_reverse',
+                'message' => $e->getMessage(),
+                'exception' => $e,
+            ]);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Post an action of a charge (capture, refunds, expire, reverse).
+     *
+     * @param  string|null  $id
+     * @param  array<string, mixed>  $params
+     * @return array<string, mixed>
+     *
+     * @throws Exception
+     */
+    private function request(string $action, $id = null, array $params = []): array
+    {
+        $id = $id ?? $this->id;
+
+        if (! $id) {
+            throw new Exception('Charge is not loaded, find it first or pass its id.');
+        }
+
+        return Transport::request('POST', "charges/{$id}/{$action}", $this->omiseConfig->getSecretKey(), $params);
     }
 
     /**
