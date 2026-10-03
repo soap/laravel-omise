@@ -33,3 +33,6 @@ testbench.yaml
 
 # Local keys for vendor/bin/testbench omise:* commands
 /workbench/.env
+
+# Local keys, never commit them
+.env

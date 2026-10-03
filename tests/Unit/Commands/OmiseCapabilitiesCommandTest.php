@@ -5,8 +5,8 @@ use Soap\LaravelOmise\Omise\Capabilities;
 use Soap\LaravelOmise\OmiseConfig;
 
 beforeEach(function () {
-    putenv('OMISE_TEST_PUBLIC_KEY=pkey_test_5q2qjs6ks3kehbic85t');
-    putenv('OMISE_TEST_SECRET_KEY=skey_test_5q2qjs6kst7j985ncow');
+    putenv('OMISE_TEST_PUBLIC_KEY=pkey_test_fake');
+    putenv('OMISE_TEST_SECRET_KEY=skey_test_fake');
     putenv('OMISE_SANDBOX_STATUS=true');
 
     config([
