@@ -76,7 +76,8 @@ class Account extends BaseObject
 
     public function toArray(): array
     {
-        return [
+        // Every attribute of the API, these keys are always present.
+        return array_merge([
             'id' => $this->id,
             'team' => $this->team,
             'email' => $this->email,
@@ -96,6 +97,6 @@ class Account extends BaseObject
             'last_updated_api_version' => $this->last_updated_api_version ?? null,
             'transfer_config' => $this->transfer_config ?? [],
             'created_at' => $this->created_at,
-        ];
+        ], $this->attributes());
     }
 }

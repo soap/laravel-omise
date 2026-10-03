@@ -53,7 +53,8 @@ class Refund extends BaseObject
      */
     public function toArray(): array
     {
-        return [
+        // Every attribute of the API, these keys are always present.
+        return array_merge([
             'id' => $this->id ?? null,
             'object' => $this->getProperty('object', 'refund'),
             'livemode' => $this->livemode ?? false,
@@ -65,6 +66,6 @@ class Refund extends BaseObject
             'status' => $this->status ?? null,
             'metadata' => $this->metadata ?? [],
             'created_at' => $this->created_at ?? null,
-        ];
+        ], $this->attributes());
     }
 }

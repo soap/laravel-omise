@@ -237,7 +237,8 @@ class Capabilities extends BaseObject
     {
         $this->ensureDataExists();
 
-        return [
+        // Every attribute of the API, these keys are always present.
+        return array_merge([
             'object' => $this->object['object'] ?? 'capability',
             'location' => $this->object['location'] ?? null,
             'country' => $this->object['country'] ?? null,
@@ -246,7 +247,7 @@ class Capabilities extends BaseObject
             'payment_methods' => $this->object['payment_methods'] ?? [],
             'tokenization_methods' => $this->object['tokenization_methods'] ?? [],
             'zero_interest_installments' => $this->object['zero_interest_installments'] ?? false,
-        ];
+        ], $this->attributes());
     }
 
     /**

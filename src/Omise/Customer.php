@@ -162,7 +162,8 @@ class Customer extends BaseObject
      */
     public function toArray(): array
     {
-        return [
+        // Every attribute of the API, these keys are always present.
+        return array_merge([
             'id' => $this->id ?? null,
             'object' => $this->getProperty('object', 'customer'),
             'livemode' => $this->livemode ?? false,
@@ -172,6 +173,6 @@ class Customer extends BaseObject
             'default_card' => $this->default_card ?? null,
             'metadata' => $this->metadata ?? [],
             'created_at' => $this->created_at ?? null,
-        ];
+        ], $this->attributes());
     }
 }

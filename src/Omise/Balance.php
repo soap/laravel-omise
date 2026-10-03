@@ -78,7 +78,8 @@ class Balance extends BaseObject
      */
     public function toArray(): array
     {
-        return [
+        // Every attribute of the API, these keys are always present.
+        return array_merge([
             'object' => $this->getProperty('object', 'balance'),
             'livemode' => $this->livemode,
             'location' => $this->location ?? null,
@@ -89,6 +90,6 @@ class Balance extends BaseObject
             'reserve' => $this->reserve,
             'on_hold' => $this->on_hold ?? null,
             'created_at' => $this->created_at ?? null,
-        ];
+        ], $this->attributes());
     }
 }

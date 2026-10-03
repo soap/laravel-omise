@@ -124,3 +124,34 @@ it('reports the error from a command when failed calls are thrown', function () 
         ->expectsOutputToContain('authentication failed')
         ->assertFailed();
 });
+
+it('converts every attribute of a resource to an array', function () {
+    $customer = [
+        'object' => 'customer',
+        'id' => 'cust_a',
+        'email' => 'customer@example.com',
+        'default_card' => 'card_a',
+        'cards' => ['object' => 'list', 'total' => 1, 'data' => [['object' => 'card', 'id' => 'card_a', 'last_digits' => '4242']]],
+        'metadata' => ['user_id' => 7],
+    ];
+    $source = [
+        'object' => 'source',
+        'id' => 'src_a',
+        'type' => 'promptpay',
+        'scannable_code' => ['image' => ['download_uri' => 'https://example.com/qr.png']],
+    ];
+
+    Omise::fake([
+        'api.omise.co/customers/cust_a' => Http::response($customer),
+        'api.omise.co/sources/src_a' => Http::response($source),
+    ]);
+
+    $customerArray = Omise::customer()->find('cust_a')->toArray();
+    $sourceArray = Omise::source()->retrieve('src_a')->toArray();
+
+    expect($customerArray)->toMatchArray($customer)
+        ->and($customerArray['cards']['data'][0]['last_digits'])->toBe('4242')
+        ->and($customerArray)->toHaveKeys(['livemode', 'location', 'description', 'created_at'])
+        ->and($sourceArray)->toMatchArray($source)
+        ->and(Omise::customer()->toArray())->toMatchArray(['id' => null, 'object' => 'customer', 'metadata' => []]);
+});

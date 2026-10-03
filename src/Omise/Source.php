@@ -65,7 +65,8 @@ class Source extends BaseObject
      */
     public function toArray(): array
     {
-        return [
+        // Every attribute of the API, these keys are always present.
+        return array_merge([
             'id' => $this->id ?? null,
             'object' => 'source',
             'livemode' => $this->livemode ?? false,
@@ -75,6 +76,6 @@ class Source extends BaseObject
             'amount' => $this->amount ?? null,
             'currency' => $this->currency ?? null,
             'created_at' => $this->created_at ?? null,
-        ];
+        ], $this->attributes());
     }
 }
