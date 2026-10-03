@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-omise` will be documented in this file.
 
+## Add laravel http transport for better test - 2026-10-03
+
+**Full Changelog**: https://github.com/soap/laravel-omise/compare/v1.3.0...v1.4.0
+
 ## Enhanced capabilities retrieval - 2025-10-24
 
 **Full Changelog**: https://github.com/soap/laravel-omise/compare/v1.2.3...v1.2.4
