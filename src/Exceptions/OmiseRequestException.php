@@ -36,4 +36,12 @@ class OmiseRequestException extends RuntimeException
     {
         return $this->error->getCode();
     }
+
+    /**
+     * The error code Omise answered with (e.g. `invalid_card`), null when the error did not come from the API.
+     */
+    public function getOmiseCode(): ?string
+    {
+        return $this->error->getOmiseCode();
+    }
 }

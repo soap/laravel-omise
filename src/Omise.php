@@ -25,6 +25,16 @@ class Omise
         return $this->config->canInitialize();
     }
 
+    /**
+     * What is missing from the configuration, empty when it is valid.
+     *
+     * @return array<int, string>
+     */
+    public function configErrors(): array
+    {
+        return $this->config->validate();
+    }
+
     public function liveMode()
     {
         return ! $this->config->isSandboxEnabled();

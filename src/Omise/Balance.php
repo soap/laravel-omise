@@ -38,7 +38,7 @@ class Balance extends BaseObject
         try {
             $this->refresh(OmiseBalance::retrieve($this->omiseConfig->getPublicKey(), $this->omiseConfig->getSecretKey()));
         } catch (\Exception $e) {
-            return new Error([
+            return $this->fail([
                 'code' => 'not_found',
                 'message' => $e->getMessage(),
                 'exception' => $e,
@@ -79,7 +79,7 @@ class Balance extends BaseObject
     public function toArray(): array
     {
         return [
-            'object' => $this->object,
+            'object' => $this->getProperty('object', 'balance'),
             'livemode' => $this->livemode,
             'location' => $this->location ?? null,
             'total' => $this->total,

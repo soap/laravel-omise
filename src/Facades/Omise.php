@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Facade;
 
 /**
  * @method static bool validConfig()
+ * @method static array configErrors()
  * @method static bool liveMode()
  * @method static string getPublicKey()
  * @method static string getSecretKey()

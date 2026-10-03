@@ -22,7 +22,7 @@ A comprehensive Laravel package for seamless Omise payment gateway integration w
 ## Requirements
 
 - PHP 8.1 or higher
-- Laravel 10.x, 11.x, or 12.x
+- Laravel 10.x, 11.x, 12.x, or 13.x
 - Omise Account (sandbox or live)
 
 ## Installation
@@ -61,8 +61,8 @@ Published configuration file (`config/omise.php`):
 return [
     'url' => 'https://api.omise.co',
 
-    'live_public_key' => env('OMISE_LIVE_PUBLIC_KEY', 'pkey_test_xxx'),
-    'live_secret_key' => env('OMISE_LIVE_SECRET_KEY', 'skey_test_xxx'),
+    'live_public_key' => env('OMISE_LIVE_PUBLIC_KEY', ''),
+    'live_secret_key' => env('OMISE_LIVE_SECRET_KEY', ''),
 
     'test_public_key' => env('OMISE_TEST_PUBLIC_KEY', ''),
     'test_secret_key' => env('OMISE_TEST_SECRET_KEY', ''),
@@ -71,6 +71,9 @@ return [
     'api_version' => env('OMISE_API_VERSION', '2019-05-29'),
 
     'sandbox_status' => env('OMISE_SANDBOX_STATUS', true),
+
+    // true = failed API calls throw OmiseRequestException instead of returning an Error
+    'throw' => env('OMISE_THROW', false),
 
     'http' => [
         'driver' => env('OMISE_HTTP_DRIVER', 'sdk'),   // "sdk" or "laravel"
@@ -333,7 +336,11 @@ if ($charge->isFullyRefunded()) {
 }
 
 // Get refunded amount
-$refundedAmount = $charge->getRefundedAmount();
+$refundedAmount = $charge->getRefundedAmount();        // 500.00 (in major units)
+$rawRefunded = $charge->getRawRefundedAmount();        // 50000 (in minor units)
+
+// Convert to array (the attributes returned by the API)
+$data = $charge->toArray();
 
 // Validate charge object
 if ($charge->isValid()) {
@@ -587,7 +594,8 @@ $charge = app('omise')->charge()->create([...]);
 
 if ($charge instanceof Error) {
     // Get error details
-    $errorCode = $charge->getCode();        // e.g., 'invalid_card'
+    $errorCode = $charge->getCode();        // Code of the package: 'bad_request', 'not_found', 'failed_capture'...
+    $omiseCode = $charge->getOmiseCode();   // Code Omise answered with: 'invalid_card', 'used_token'... or null
     $errorMessage = $charge->getMessage();  // Human-readable message
     
     // Log error
@@ -615,9 +623,14 @@ try {
 } catch (OmiseRequestException $e) {
     $e->getMessage();     // Message from Omise
     $e->getErrorCode();   // Same as Error::getCode()
+    $e->getOmiseCode();   // Same as Error::getOmiseCode()
     $e->getPrevious();    // OmiseException of the SDK, or a connection exception
 }
 ```
+
+Set `OMISE_THROW=true` (`omise.throw`) to throw on every failed call without chaining `throw()`. A result that is not checked can then no longer be mistaken for a loaded object.
+
+`getOmiseCode()` is `null` when the error did not come from the Omise API (the connection failed or timed out, the response could not be read). The outcome of the request is then unknown: retrieve the charge before treating the payment as failed.
 
 `isError()` is available on every result as an alternative to `instanceof Error`.
 
@@ -687,7 +700,7 @@ Always verify your configuration before processing payments:
 
 ```php
 if (!app('omise')->validConfig()) {
-    $errors = app('omise')->config->validate();
+    $errors = app('omise')->configErrors();   // e.g. ['Secret key is missing']
     // Handle configuration errors
 }
 ```

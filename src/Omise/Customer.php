@@ -42,7 +42,7 @@ class Customer extends BaseObject
         try {
             $this->refresh(OmiseCustomer::retrieve($id, $this->omiseConfig->getPublicKey(), $this->omiseConfig->getSecretKey()));
         } catch (Exception $e) {
-            return new Error([
+            return $this->fail([
                 'code' => 'not_found',
                 'message' => $e->getMessage(),
                 'exception' => $e,
@@ -61,7 +61,7 @@ class Customer extends BaseObject
         try {
             $this->refresh(OmiseCustomer::create($params, $this->omiseConfig->getPublicKey(), $this->omiseConfig->getSecretKey()));
         } catch (Exception $e) {
-            return new Error([
+            return $this->fail([
                 'code' => 'bad_request',
                 'message' => $e->getMessage(),
                 'exception' => $e,
@@ -83,7 +83,7 @@ class Customer extends BaseObject
         try {
             $this->fill($this->request('PATCH', $this->path($id), $params));
         } catch (Exception $e) {
-            return new Error([
+            return $this->fail([
                 'code' => 'bad_request',
                 'message' => $e->getMessage(),
                 'exception' => $e,
@@ -105,7 +105,7 @@ class Customer extends BaseObject
         try {
             $this->request('DELETE', $this->path($customerId)."/cards/{$cardId}");
         } catch (Exception $e) {
-            return new Error([
+            return $this->fail([
                 'code' => 'bad_request',
                 'message' => $e->getMessage(),
                 'exception' => $e,
@@ -164,7 +164,7 @@ class Customer extends BaseObject
     {
         return [
             'id' => $this->id ?? null,
-            'object' => $this->object ?? 'customer',
+            'object' => $this->getProperty('object', 'customer'),
             'livemode' => $this->livemode ?? false,
             'location' => $this->location ?? null,
             'email' => $this->email ?? null,

@@ -2,6 +2,7 @@
 
 namespace Soap\LaravelOmise\Omise;
 
+use OmiseException;
 use Soap\LaravelOmise\Exceptions\OmiseRequestException;
 use Throwable;
 
@@ -69,9 +70,41 @@ class Error extends BaseObject
         return $this->exception;
     }
 
+    /**
+     * The error code Omise answered with (e.g. `invalid_card`, `used_token`), see https://docs.omise.co/api-errors.
+     *
+     * Null when the error did not come from the API: the request did not reach Omise,
+     * its response could not be read, or it was never sent. The outcome of the request
+     * is then unknown, do not treat it as a declined payment.
+     */
+    public function getOmiseCode(): ?string
+    {
+        if (! $this->exception instanceof OmiseException) {
+            return null;
+        }
+
+        // The error response of the API, as an array.
+        $code = data_get($this->exception->getOmiseError(), 'code');
+
+        return is_string($code) ? $code : null;
+    }
+
     public function isError(): bool
     {
         return true;
+    }
+
+    /**
+     * Convert to array representation
+     */
+    public function toArray(): array
+    {
+        return [
+            'object' => 'error',
+            'code' => $this->getCode(),
+            'omise_code' => $this->getOmiseCode(),
+            'message' => $this->getMessage(),
+        ];
     }
 
     /**

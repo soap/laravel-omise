@@ -35,7 +35,7 @@ class Source extends BaseObject
         try {
             $this->refresh(OmiseSource::create($params, $this->omiseConfig->getPublicKey(), $this->omiseConfig->getSecretKey()));
         } catch (Exception $e) {
-            return new Error([
+            return $this->fail([
                 'code' => 'bad_request',
                 'message' => $e->getMessage(),
                 'exception' => $e,
@@ -50,7 +50,7 @@ class Source extends BaseObject
         try {
             $this->refresh(OmiseSource::retrieve($id, $this->omiseConfig->getPublicKey(), $this->omiseConfig->getSecretKey()));
         } catch (Exception $e) {
-            return new Error([
+            return $this->fail([
                 'code' => 'not_found',
                 'message' => $e->getMessage(),
                 'exception' => $e,

@@ -3,6 +3,7 @@
 namespace Soap\LaravelOmise\Omise;
 
 use ArrayAccess;
+use BadMethodCallException;
 use Illuminate\Support\Str;
 use Soap\LaravelOmise\Exceptions\OmiseRequestException;
 
@@ -46,6 +47,25 @@ class BaseObject
         }
 
         return $this;
+    }
+
+    /**
+     * The result of a failed API call: an Error, or an exception when `omise.throw` is enabled.
+     *
+     * @param  array<string, mixed>  $error
+     * @return Error
+     *
+     * @throws OmiseRequestException
+     */
+    protected function fail(array $error)
+    {
+        $error = new Error($error);
+
+        if (config('omise.throw')) {
+            $error->throw();
+        }
+
+        return $error;
     }
 
     /**
@@ -121,6 +141,32 @@ class BaseObject
     }
 
     /**
+     * The attributes of the loaded object, as returned by the API.
+     *
+     * @return array<string, mixed>
+     */
+    protected function attributes(): array
+    {
+        if (is_array($this->object)) {
+            return $this->object;
+        }
+
+        if (! is_object($this->object)) {
+            return [];
+        }
+
+        return method_exists($this->object, 'toArray') ? $this->object->toArray() : get_object_vars($this->object);
+    }
+
+    /**
+     * Convert to array representation
+     */
+    public function toArray(): array
+    {
+        return $this->attributes();
+    }
+
+    /**
      * Validate required properties exist
      */
     public function validateProperties(array $requiredProperties): bool
@@ -155,10 +201,16 @@ class BaseObject
      * @param  string  $method
      * @param  array  $args
      * @return mixed
+     *
+     * @throws BadMethodCallException when the loaded object has no such attribute
      */
     public function __call($method, $args)
     {
         $key = Str::snake($method);
+
+        if ($this->isLoaded() && ! array_key_exists($key, $this->attributes())) {
+            throw new BadMethodCallException(sprintf('Call to undefined method %s::%s()', static::class, $method));
+        }
 
         return $this->$key;
     }

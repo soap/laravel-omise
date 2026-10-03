@@ -23,6 +23,7 @@ use Soap\LaravelOmise\OmiseConfig;
  * @property bool $captured
  * @property string $transaction
  * @property int $refunded
+ * @property int $refunded_amount
  * @property array $refunds
  * @property string $failure_code
  * @property string $failure_message
@@ -56,29 +57,28 @@ class Charge extends BaseObject
     {
         try {
             $result = OmiseCharge::retrieve($id, $this->omiseConfig->getPublicKey(), $this->omiseConfig->getSecretKey());
-
-            if (! $result) {
-                return new Error([
-                    'code' => 'not_found',
-                    'message' => 'Charge not found or API returned null',
-                ]);
-            }
-
-            $this->refresh($result);
-
-            // Validate that the object was properly loaded with required properties
-            if (! $this->hasProperty('id')) {
-                return new Error([
-                    'code' => 'invalid_response',
-                    'message' => 'Charge object was not properly loaded from API response',
-                ]);
-            }
-
         } catch (Exception $e) {
-            return new Error([
+            return $this->fail([
                 'code' => 'api_error',
                 'message' => $e->getMessage(),
                 'exception' => $e,
+            ]);
+        }
+
+        if (! $result) {
+            return $this->fail([
+                'code' => 'not_found',
+                'message' => 'Charge not found or API returned null',
+            ]);
+        }
+
+        $this->refresh($result);
+
+        // Validate that the object was properly loaded with required properties
+        if (! $this->hasProperty('id')) {
+            return $this->fail([
+                'code' => 'invalid_response',
+                'message' => 'Charge object was not properly loaded from API response',
             ]);
         }
 
@@ -107,7 +107,7 @@ class Charge extends BaseObject
         try {
             $this->refresh(OmiseCharge::create($params, $this->omiseConfig->getPublicKey(), $this->omiseConfig->getSecretKey()));
         } catch (Exception $e) {
-            return new Error([
+            return $this->fail([
                 'code' => 'bad_request',
                 'message' => $e->getMessage(),
                 'exception' => $e,
@@ -125,7 +125,7 @@ class Charge extends BaseObject
         try {
             $this->fill($this->request('capture', null, $params));
         } catch (Exception $e) {
-            return new Error([
+            return $this->fail([
                 'code' => 'failed_capture',
                 'message' => $e->getMessage(),
                 'exception' => $e,
@@ -149,7 +149,7 @@ class Charge extends BaseObject
                 $this->omiseConfig->getSecretKey()
             );
         } catch (Exception $e) {
-            return new Error([
+            return $this->fail([
                 'code' => 'failed_refund',
                 'message' => $e->getMessage(),
                 'exception' => $e,
@@ -170,7 +170,7 @@ class Charge extends BaseObject
         try {
             $this->fill($this->request('expire', $id));
         } catch (Exception $e) {
-            return new Error([
+            return $this->fail([
                 'code' => 'failed_expire',
                 'message' => $e->getMessage(),
                 'exception' => $e,
@@ -191,7 +191,7 @@ class Charge extends BaseObject
         try {
             $this->fill($this->request('reverse', $id));
         } catch (Exception $e) {
-            return new Error([
+            return $this->fail([
                 'code' => 'failed_reverse',
                 'message' => $e->getMessage(),
                 'exception' => $e,
@@ -282,14 +282,31 @@ class Charge extends BaseObject
 
     public function getRefundedAmount()
     {
-        $refundedAmount = 0;
+        $refundedAmount = $this->getRawRefundedAmount();
 
-        if (! $this->refunds) {
-            return $refundedAmount;
+        if ($refundedAmount === 0) {
+            return 0;
         }
 
-        foreach ($this->refunds['data'] as $refund) {
-            $refundedAmount += ($refund['amount'] / 100);
+        return OmiseMoney::toCurrencyUnit($refundedAmount, $this->currency);
+    }
+
+    /**
+     * The refunded amount in the smallest unit of the currency.
+     */
+    public function getRawRefundedAmount(): int
+    {
+        // Older API versions name it `refunded`, and the `refunds` list is only its first page.
+        foreach (['refunded_amount', 'refunded'] as $key) {
+            if (is_numeric($this->$key)) {
+                return (int) $this->$key;
+            }
+        }
+
+        $refundedAmount = 0;
+
+        foreach ($this->refunds['data'] ?? [] as $refund) {
+            $refundedAmount += (int) ($refund['amount'] ?? 0);
         }
 
         return $refundedAmount;
@@ -297,7 +314,7 @@ class Charge extends BaseObject
 
     public function isFullyRefunded(): bool
     {
-        return (($this->amount / 100) - $this->getRefundedAmount()) === 0;
+        return $this->amount > 0 && $this->getRawRefundedAmount() >= $this->amount;
     }
 
     /**

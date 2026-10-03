@@ -108,3 +108,45 @@ it('validates required properties correctly', function () {
 
     expect($charge->isValid())->toBeFalse();
 });
+
+function chargeWith(array $attributes): Charge
+{
+    $charge = new Charge(new OmiseConfig);
+
+    (new ReflectionProperty($charge, 'object'))->setValue($charge, $attributes);
+
+    return $charge;
+}
+
+it('converts a charge to an array', function () {
+    $attributes = ['object' => 'charge', 'id' => 'chrg_test', 'amount' => 100000, 'currency' => 'thb'];
+
+    expect(chargeWith($attributes)->toArray())->toBe($attributes)
+        ->and((new Charge(new OmiseConfig))->toArray())->toBe([]);
+});
+
+it('reads attributes as methods', function () {
+    $charge = chargeWith(['id' => 'chrg_test', 'authorize_uri' => null, 'failure_code' => 'insufficient_fund']);
+
+    expect($charge->authorizeUri())->toBeNull()
+        ->and($charge->failureCode())->toBe('insufficient_fund');
+});
+
+it('rejects a method that is not an attribute of the loaded charge', function () {
+    chargeWith(['id' => 'chrg_test'])->isSucessful();
+})->throws(BadMethodCallException::class, 'isSucessful');
+
+it('knows a charge is fully refunded whatever its amount', function (array $attributes, bool $fullyRefunded, $refundedAmount) {
+    $charge = chargeWith($attributes);
+
+    expect($charge->isFullyRefunded())->toBe($fullyRefunded)
+        ->and($charge->getRefundedAmount())->toEqual($refundedAmount);
+})->with([
+    'amount with satang' => [['amount' => 12345, 'currency' => 'thb', 'refunds' => ['data' => [['amount' => 12345]]]], true, 123.45],
+    'several refunds' => [['amount' => 12345, 'currency' => 'thb', 'refunds' => ['data' => [['amount' => 12000], ['amount' => 345]]]], true, 123.45],
+    'partial refund' => [['amount' => 12345, 'currency' => 'thb', 'refunds' => ['data' => [['amount' => 345]]]], false, 3.45],
+    'no refund' => [['amount' => 12345, 'currency' => 'thb', 'refunds' => ['data' => []]], false, 0],
+    'currency without subunit' => [['amount' => 500, 'currency' => 'jpy', 'refunds' => ['data' => [['amount' => 500]]]], true, 500],
+    'refunded_amount of the api' => [['amount' => 12345, 'currency' => 'thb', 'refunded_amount' => 12345, 'refunds' => ['data' => []]], true, 123.45],
+    'not loaded' => [[], false, 0],
+]);

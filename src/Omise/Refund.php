@@ -23,7 +23,7 @@ class Refund extends BaseObject
         try {
             $this->refresh(new OmiseRefund($refundData, $this->omiseConfig->getPublicKey(), $this->omiseConfig->getSecretKey()));
         } catch (Exception $e) {
-            return new Error([
+            return $this->fail([
                 'code' => 'not_found',
                 'message' => $e->getMessage(),
                 'exception' => $e,
@@ -38,7 +38,7 @@ class Refund extends BaseObject
         try {
             $this->refresh(OmiseRefund::search($query, $this->omiseConfig->getPublicKey(), $this->omiseConfig->getSecretKey()));
         } catch (Exception $e) {
-            return new Error([
+            return $this->fail([
                 'code' => 'not_found',
                 'message' => $e->getMessage(),
                 'exception' => $e,
@@ -55,7 +55,7 @@ class Refund extends BaseObject
     {
         return [
             'id' => $this->id ?? null,
-            'object' => $this->object ?? 'refund',
+            'object' => $this->getProperty('object', 'refund'),
             'livemode' => $this->livemode ?? false,
             'location' => $this->location ?? null,
             'amount' => $this->amount ?? null,

@@ -4,8 +4,8 @@
 return [
     'url' => 'https://api.omise.co',
 
-    'live_public_key' => env('OMISE_LIVE_PUBLIC_KEY', 'pkey_test_xxx'),
-    'live_secret_key' => env('OMISE_LIVE_SECRET_KEY', 'skey_test_xxx'),
+    'live_public_key' => env('OMISE_LIVE_PUBLIC_KEY', ''),
+    'live_secret_key' => env('OMISE_LIVE_SECRET_KEY', ''),
 
     'test_public_key' => env('OMISE_TEST_PUBLIC_KEY', ''),
     'test_secret_key' => env('OMISE_TEST_SECRET_KEY', ''),
@@ -17,6 +17,13 @@ return [
     'api_version' => env('OMISE_API_VERSION', '2019-05-29'),
 
     'sandbox_status' => env('OMISE_SANDBOX_STATUS', true),
+
+    /*
+     * Failed API calls return a `Soap\LaravelOmise\Omise\Error` object. Set this to true
+     * to throw `Soap\LaravelOmise\Exceptions\OmiseRequestException` instead, so a result
+     * that is not checked cannot be mistaken for a loaded object.
+     */
+    'throw' => env('OMISE_THROW', false),
 
     /*
      * How requests are sent to the Omise API.

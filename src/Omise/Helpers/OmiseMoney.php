@@ -2,7 +2,7 @@
 
 namespace Soap\LaravelOmise\Omise\Helpers;
 
-use Exception;
+use InvalidArgumentException;
 
 class OmiseMoney
 {
@@ -43,7 +43,7 @@ class OmiseMoney
         $currency = strtoupper($currency);
 
         if (! isset(self::$subunitMultiplier[$currency])) {
-            throw new Exception(trans('treasurer::translations.unsupport_currency'));
+            throw new InvalidArgumentException("Unsupported currency [{$currency}].");
         }
 
         return $amount * self::$subunitMultiplier[$currency];
@@ -58,7 +58,7 @@ class OmiseMoney
         $currency = strtoupper($currency);
 
         if (! isset(self::$subunitMultiplier[$currency])) {
-            throw new Exception(trans('treasurer::translations.unsupport_currency'));
+            throw new InvalidArgumentException("Unsupported currency [{$currency}].");
         }
 
         return $amount / self::$subunitMultiplier[$currency];
@@ -71,7 +71,7 @@ class OmiseMoney
     private static function purifyAmount($amount)
     {
         if (! is_numeric($amount)) {
-            throw new Exception(trans('treasurer::translations.inavlid_type_of_amount'));
+            throw new InvalidArgumentException('The amount must be numeric.');
         }
 
         return (float) $amount;

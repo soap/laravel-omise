@@ -41,7 +41,7 @@ class Account extends BaseObject
         try {
             $this->refresh(OmiseAccount::retrieve($this->omiseConfig->getPublicKey(), $this->omiseConfig->getSecretKey()));
         } catch (\Exception $e) {
-            return new Error([
+            return $this->fail([
                 'code' => 'not_found',
                 'message' => $e->getMessage(),
                 'exception' => $e,
@@ -64,7 +64,7 @@ class Account extends BaseObject
                 'webhook_uri' => $uri,
             ]));
         } catch (\Exception $e) {
-            return new Error([
+            return $this->fail([
                 'code' => 'bad_request',
                 'message' => $e->getMessage(),
                 'exception' => $e,
