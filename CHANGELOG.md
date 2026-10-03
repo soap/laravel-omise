@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-omise` will be documented in this file.
 
+## Add payment processor and bugs fixed - 2026-10-03
+
+### What's Changed
+
+**Full Changelog**: https://github.com/soap/laravel-omise/compare/v1.5.0...v1.6.0
+
 ## Add features - 2026-10-03
 
 ### What's Changed
@@ -43,23 +49,27 @@ All notable changes to `laravel-omise` will be documented in this file.
 ### Major Improvements
 
 #### Enhanced Capabilities Support
+
 * **New:** Comprehensive `OmiseCapabilitiesCommand` with filtering and JSON export
 * **New:** Added support for 40+ payment methods with Thai-friendly names
 * **New:** Methods for checking supported currencies, banks, and payment methods
 * **Improved:** Better capabilities API handling with proper filtering
 
 #### Better Object Handling
+
 * **Fixed:** Critical bug where Charge objects couldn't access properties from Omise SDK
 * **Improved:** BaseObject now supports both array and object property access
 * **New:** Added `hasProperty()`, `getProperty()`, and `validateProperties()` methods
 * **New:** Charge validation with `isValid()` and `getDebugInfo()` methods
 
 #### Enhanced Commands
+
 * **Improved:** `omise:capabilities` command with `--currency`, `--type`, and `--format` options
 * **Improved:** Better command output formatting with emoji and tables
 * **New:** Support for payment method categorization (Card, QR, Wallet, etc.)
 
 #### Developer Experience
+
 * **New:** Comprehensive README with detailed examples
 * **New:** Capabilities command documentation
 * **Improved:** PHPStan Level 5 compliance maintained
@@ -78,6 +88,7 @@ All notable changes to `laravel-omise` will be documented in this file.
 ### API Changes
 
 **Non-breaking additions:**
+
 - `Capabilities::getAvailablePaymentMethods()` - New method (old typo method deprecated)
 - `Capabilities::getSupportedCurrencies()` - Get all supported currencies
 - `Capabilities::getSupportedBanks()` - Get list of supported banks
@@ -91,6 +102,7 @@ All notable changes to `laravel-omise` will be documented in this file.
 - `Charge::retrieve()` - Alias for `find()` method
 
 **Deprecated:**
+
 - `Capabilities::getAavailablePaymentMethods()` - Use `getAvailablePaymentMethods()` instead (typo fix)
 
 ### Bug Fixes
