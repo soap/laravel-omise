@@ -5,6 +5,8 @@ namespace Soap\LaravelOmise;
 use Soap\LaravelOmise\Commands\OmiseAccountCommand;
 use Soap\LaravelOmise\Commands\OmiseBalanceCommand;
 use Soap\LaravelOmise\Commands\OmiseCapabilitiesCommand;
+use Soap\LaravelOmise\Commands\OmisePayCommand;
+use Soap\LaravelOmise\Commands\OmisePaymentStatusCommand;
 use Soap\LaravelOmise\Commands\OmiseRefundCommand;
 use Soap\LaravelOmise\Commands\OmiseVerifyCommand;
 use Soap\LaravelOmise\Contracts\PaymentProcessorFactoryInterface;
@@ -31,6 +33,8 @@ class LaravelOmiseServiceProvider extends PackageServiceProvider
                 OmiseAccountCommand::class,
                 OmiseCapabilitiesCommand::class,
                 OmiseRefundCommand::class,
+                OmisePayCommand::class,
+                OmisePaymentStatusCommand::class,
             ]);
     }
 

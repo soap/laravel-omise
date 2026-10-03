@@ -150,6 +150,35 @@ php artisan omise:capabilities --format=json
 php artisan omise:refund
 ```
 
+### Payments
+
+Try a payment method against the Omise API without writing a page for it:
+
+```bash
+# PromptPay: prints the URL of the QR code
+php artisan omise:pay promptpay 20
+
+# Card: with a token of Omise.js, or the Omise test card (test keys only)
+php artisan omise:pay card 20.50 --card=tokn_test_xxxxx
+php artisan omise:pay card 20.50 --test-card
+php artisan omise:pay card 20.50 --test-card --authorize-only
+
+# Mobile banking and installments
+php artisan omise:pay mobile_banking 20 --bank=scb --return-uri=https://example.com/return
+php artisan omise:pay installment 5000 --bank=bay --term=6 --test-card
+
+# Look a payment up again
+php artisan omise:payment-status chrg_test_xxxxx
+```
+
+Amounts are in the currency unit (baht). Both commands accept `--json`. With live keys `omise:pay` asks before it creates a charge.
+
+When working on this package, run the commands with Testbench and put your test keys in `workbench/.env` (ignored by git, see `workbench/.env.example`):
+
+```bash
+vendor/bin/testbench omise:pay promptpay 20
+```
+
 See [Capabilities Command Documentation](docs/capabilities-command.md) for detailed usage.
 ## Usage
 
