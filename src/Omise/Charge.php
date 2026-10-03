@@ -5,6 +5,8 @@ namespace Soap\LaravelOmise\Omise;
 use Exception;
 use OmiseCharge;
 use OmiseRefund;
+use Soap\LaravelOmise\Events\ChargeCreated;
+use Soap\LaravelOmise\Events\RefundCreated;
 use Soap\LaravelOmise\Http\Transport;
 use Soap\LaravelOmise\Omise\Helpers\OmiseMoney;
 use Soap\LaravelOmise\OmiseConfig;
@@ -114,6 +116,8 @@ class Charge extends BaseObject
             ]);
         }
 
+        event(new ChargeCreated($this));
+
         return $this;
     }
 
@@ -155,6 +159,8 @@ class Charge extends BaseObject
                 'exception' => $e,
             ]);
         }
+
+        event(new RefundCreated($this, $refund));
 
         return $refund;
     }

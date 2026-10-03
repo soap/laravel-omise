@@ -174,7 +174,7 @@ class PaymentController extends Controller
 
 ### Facade Usage
 
-Or use the `app('omise')` helper:
+The injected class, the `Soap\LaravelOmise\Facades\Omise` facade and `app('omise')` all resolve the same instance. Use the facade (`Omise::charge()`) or the helper:
 
 ```php
 // Access account information
@@ -754,6 +754,40 @@ $satang = $charge->getRawAmount(); // Original minor units
 ```
 
 ## Advanced Usage
+
+### Multiple Omise Accounts
+
+`withKeys()` returns an instance that uses the keys of another account, for example the one of a tenant. The configured keys are left untouched:
+
+```php
+use Soap\LaravelOmise\Facades\Omise;
+
+$omise = Omise::withKeys($school->omise_public_key, $school->omise_secret_key);
+
+$charge = $omise->charge()->create([...]);
+$omise->liveMode();   // false for test keys (skey_test_...), true otherwise
+```
+
+### Events
+
+| Event | Dispatched when | Properties |
+|---|---|---|
+| `Soap\LaravelOmise\Events\ChargeCreated` | Omise accepted a new charge (it may still await a payment or a capture) | `$charge` |
+| `Soap\LaravelOmise\Events\RefundCreated` | A charge was refunded | `$charge`, `$refund` |
+| `Soap\LaravelOmise\Events\RequestFailed` | An API call failed, before the error is returned or thrown | `$error` |
+
+```php
+use Illuminate\Support\Facades\Event;
+use Soap\LaravelOmise\Events\RequestFailed;
+
+Event::listen(function (RequestFailed $event) {
+    Log::warning('Omise request failed', $event->error->toArray());
+});
+```
+
+### Arrays and JSON
+
+Every result implements `Arrayable` and `JsonSerializable`, so it can be returned from a controller or passed to `response()->json()`. `isset($charge->authorize_uri)` tells whether an attribute has a value.
 
 ### HTTP Driver
 

@@ -13,6 +13,9 @@ class OmiseBalanceCommand extends Command
 
     public function handle(): int
     {
+        // The command reports the errors itself.
+        config(['omise.throw' => false]);
+
         $response = app('omise')->balance()->retrieve();
 
         if ($response instanceof Error) {

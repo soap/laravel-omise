@@ -14,6 +14,9 @@ class OmiseRefundCommand extends Command
 
     public function handle(): int
     {
+        // The command reports the errors itself.
+        config(['omise.throw' => false]);
+
         $chargeId = $this->ask('Enter the charge ID to refund');
 
         $charge = app('omise')->charge()->find($chargeId);

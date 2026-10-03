@@ -13,6 +13,9 @@ class OmiseVerifyCommand extends Command
 
     public function handle(): int
     {
+        // The command reports the errors itself.
+        config(['omise.throw' => false]);
+
         if (! app('omise')->validConfig()) {
             $this->error('Omise keys configuration is invalid');
 

@@ -16,6 +16,9 @@ class OmiseCapabilitiesCommand extends Command
 
     public function handle(): int
     {
+        // The command reports the errors itself.
+        config(['omise.throw' => false]);
+
         $this->info('🔍 Fetching Omise capabilities...');
 
         $capabilities = app('omise')->capabilities()->retrieve();

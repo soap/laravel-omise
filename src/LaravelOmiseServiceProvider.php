@@ -34,10 +34,11 @@ class LaravelOmiseServiceProvider extends PackageServiceProvider
 
     public function packageRegistered()
     {
-        $this->app->singleton('omise', function ($app) {
+        $this->app->singleton(Omise::class, function ($app) {
             return new Omise($app->make(OmiseConfig::class));
         });
 
+        $this->app->alias(Omise::class, 'omise');
     }
 
     public function packageBooted()

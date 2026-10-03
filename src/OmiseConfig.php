@@ -4,19 +4,22 @@ namespace Soap\LaravelOmise;
 
 class OmiseConfig
 {
-    private $canInitialize = false;
+    /**
+     * Keys used instead of the configured ones, see withKeys().
+     *
+     * @var array{public: string, secret: string}|null
+     */
+    private $keys = null;
 
-    public function __construct()
+    /**
+     * A configuration for another Omise account, the configured keys are left untouched.
+     */
+    public function withKeys(string $publicKey, string $secretKey): self
     {
-        $this->init();
-    }
+        $config = clone $this;
+        $config->keys = ['public' => $publicKey, 'secret' => $secretKey];
 
-    private function init(): void
-    {
-        // Initialize only if both keys are present
-        if ($this->getPublicKey() && $this->getSecretKey()) {
-            $this->canInitialize = true;
-        }
+        return $config;
     }
 
     public function validate(): array
@@ -45,7 +48,8 @@ class OmiseConfig
 
     public function canInitialize()
     {
-        return $this->canInitialize;
+        // Initialize only if both keys are present
+        return $this->getPublicKey() !== '' && $this->getSecretKey() !== '';
     }
 
     public function getUrl(): string
@@ -55,11 +59,19 @@ class OmiseConfig
 
     public function isSandboxEnabled()
     {
+        if ($this->keys !== null) {
+            return str_contains($this->keys['secret'], '_test_');
+        }
+
         return config('omise.sandbox_status');
     }
 
     public function getPublicKey(): string
     {
+        if ($this->keys !== null) {
+            return $this->keys['public'];
+        }
+
         if ($this->isSandboxEnabled()) {
             return (string) config('omise.test_public_key');
         }
@@ -69,6 +81,10 @@ class OmiseConfig
 
     public function getSecretKey(): string
     {
+        if ($this->keys !== null) {
+            return $this->keys['secret'];
+        }
+
         if ($this->isSandboxEnabled()) {
             return (string) config('omise.test_secret_key');
         }

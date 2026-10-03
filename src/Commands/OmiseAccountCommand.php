@@ -13,6 +13,9 @@ class OmiseAccountCommand extends Command
 
     public function handle(): int
     {
+        // The command reports the errors itself.
+        config(['omise.throw' => false]);
+
         $response = app('omise')->account()->retrieve();
 
         if ($response instanceof Error) {

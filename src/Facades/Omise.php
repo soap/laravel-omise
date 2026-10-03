@@ -5,6 +5,7 @@ namespace Soap\LaravelOmise\Facades;
 use Illuminate\Support\Facades\Facade;
 
 /**
+ * @method static \Soap\LaravelOmise\Omise withKeys(string $publicKey, string $secretKey)
  * @method static bool validConfig()
  * @method static array configErrors()
  * @method static bool liveMode()

@@ -4,11 +4,17 @@ namespace Soap\LaravelOmise\Omise;
 
 use ArrayAccess;
 use BadMethodCallException;
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Str;
+use JsonSerializable;
+use Soap\LaravelOmise\Events\RequestFailed;
 use Soap\LaravelOmise\Exceptions\OmiseRequestException;
 
+/**
+ * @implements Arrayable<string, mixed>
+ */
 #[\AllowDynamicProperties]
-class BaseObject
+class BaseObject implements Arrayable, JsonSerializable
 {
     protected $object;
 
@@ -60,6 +66,8 @@ class BaseObject
     protected function fail(array $error)
     {
         $error = new Error($error);
+
+        event(new RequestFailed($error));
 
         if (config('omise.throw')) {
             $error->throw();
@@ -167,6 +175,14 @@ class BaseObject
     }
 
     /**
+     * @return array<string, mixed>
+     */
+    public function jsonSerialize(): array
+    {
+        return $this->toArray();
+    }
+
+    /**
      * Validate required properties exist
      */
     public function validateProperties(array $requiredProperties): bool
@@ -193,6 +209,17 @@ class BaseObject
     public function __get($key)
     {
         return isset($this->object[$key]) ? $this->object[$key] : null;
+    }
+
+    /**
+     * Whether the loaded object has a value for the key, for isset($object->$key).
+     *
+     * @param  string  $key
+     * @return bool
+     */
+    public function __isset($key)
+    {
+        return isset($this->object[$key]);
     }
 
     /**

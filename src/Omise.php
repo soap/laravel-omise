@@ -20,6 +20,20 @@ class Omise
         $this->config = $omiseConfig;
     }
 
+    /**
+     * Use the keys of another Omise account, e.g. the one of a tenant:
+     * `Omise::withKeys($publicKey, $secretKey)->charge()->create([...])`.
+     *
+     * @return static a new instance, the configured keys are left untouched
+     */
+    public function withKeys(string $publicKey, string $secretKey)
+    {
+        $omise = clone $this;
+        $omise->config = $this->config->withKeys($publicKey, $secretKey);
+
+        return $omise;
+    }
+
     public function validConfig()
     {
         return $this->config->canInitialize();
