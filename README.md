@@ -21,8 +21,8 @@ A comprehensive Laravel package for seamless Omise payment gateway integration w
 
 ## Requirements
 
-- PHP 8.1 or higher
-- Laravel 10.x, 11.x, 12.x, or 13.x
+- PHP 8.2 or higher (8.3 or higher for Laravel 13)
+- Laravel 12.x or 13.x
 - Omise Account (sandbox or live)
 
 ## Installation

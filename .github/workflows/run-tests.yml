@@ -2,9 +2,9 @@ name: Run Tests
 
 on:
   push:
-    branches: [main]
+    branches: [main, v1.x]
   pull_request:
-    branches: [main]
+    branches: [main, v1.x]
 
 jobs:
   test:
@@ -13,36 +13,20 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: [8.3, 8.4]
-        laravel: [10.*, 11.*, 12.*, 13.*]
+        php: [8.2, 8.3, 8.4, 8.5]
+        laravel: [12.*, 13.*]
         include:
-          - laravel: 10.*
-            testbench: ^8.0
-            carbon: ^2.63
-            pest_plugin: ^2.0
-            larastan: ^2.0
-            phpstan_phpunit: ^1.3
-
-          - laravel: 11.*
-            testbench: ^9.0
-            carbon: ^2.63
-            pest_plugin: ^2.4
-            larastan: ^2.0
-            phpstan_phpunit: ^1.3
-
           - laravel: 12.*
             testbench: ^10.0
-            carbon: ^3.0
-            pest_plugin: ^3.2
-            larastan: ^3.0
-            phpstan_phpunit: ^2.0
+            pest_plugin: ^3.2||^4.0
 
           - laravel: 13.*
             testbench: ^11.0
-            carbon: ^3.0
             pest_plugin: ^4.0
-            larastan: ^3.0
-            phpstan_phpunit: ^2.0
+        exclude:
+          # Laravel 13 requires PHP 8.3+
+          - laravel: 13.*
+            php: 8.2
 
     name: PHP ${{ matrix.php }} / Laravel ${{ matrix.laravel }}
 
@@ -62,12 +46,9 @@ jobs:
           composer require \
             "laravel/framework:${{ matrix.laravel }}" \
             "orchestra/testbench:${{ matrix.testbench }}" \
-            "nesbot/carbon:${{ matrix.carbon }}" \
             "pestphp/pest-plugin-laravel:${{ matrix.pest_plugin }}" \
-            "larastan/larastan:${{ matrix.larastan }}" \
-            "phpstan/phpstan-phpunit:${{ matrix.phpstan_phpunit }}" \
             --no-interaction --no-update
-          
+
           composer update --prefer-dist --no-interaction
 
       - name: ✅ Run tests
