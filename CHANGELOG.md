@@ -2,6 +2,15 @@
 
 All notable changes to `laravel-omise` will be documented in this file.
 
+## Add guzzle 8.x support - 2026-11-19
+
+### What's Changed
+
+* Update guzzlehttp/guzzle requirement from ^7.5 to ^8.2 by @dependabot[bot] in https://github.com/soap/laravel-omise/pull/30
+* Bump ramsey/composer-install from 3 to 4 by @dependabot[bot] in https://github.com/soap/laravel-omise/pull/29
+
+**Full Changelog**: https://github.com/soap/laravel-omise/compare/v1.6.1...v1.7.0
+
 ## Add cards to customer::toArray() - 2026-10-03
 
 **Full Changelog**: https://github.com/soap/laravel-omise/compare/v1.6.0...v1.6.1
